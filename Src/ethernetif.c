@@ -71,7 +71,11 @@
 #define IFNAME1 't'
 
 /* USER CODE BEGIN 1 */
-
+/* Rename network interface - Emergence X */
+#undef IFNAME0
+#define IFNAME0 'E'
+#undef IFNAME1
+#define IFNAME1 'X'
 /* USER CODE END 1 */
 
 /* Private variables ---------------------------------------------------------*/
