@@ -193,7 +193,8 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32F765xx
+-DSTM32F765xx \
+-DLWIP_DEBUG
 
 
 # AS includes
