@@ -164,6 +164,8 @@ int main(void)
     HAL_GPIO_TogglePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin);
     HAL_Delay(10);
 
+    /* Read a received packet and send it to the lwIP stack for handling */
+    MX_LWIP_Process();
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
