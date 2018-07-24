@@ -53,7 +53,8 @@
 #include "usb_device.h"
 
 /* USER CODE BEGIN Includes */
-
+#include <errno.h>
+#include <sys/unistd.h>
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -100,7 +101,35 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+int _read(int file, char *data, int len)
+{
+  if (file != STDIN_FILENO) {
+    errno = EBADF;
+    return -1;
+  }
 
+  /* Receive data through UART */
+  HAL_StatusTypeDef status;
+  status = HAL_UART_Receive(&huart5, (uint8_t*)data, len, 1000);
+
+  /* Return # of bytes read - as best we can tell */
+  return ( status == HAL_OK ? len : 0 );
+}
+
+int _write(int file, char *data, int len)
+{
+  if ((file != STDOUT_FILENO) && (file != STDERR_FILENO)) {
+    errno = EBADF;
+    return -1;
+  }
+
+  /* Transmit data through UART */
+  HAL_StatusTypeDef status;
+  status = HAL_UART_Transmit(&huart5, (uint8_t*)data, len, 1000);
+
+  /* Return # of bytes written - as best we can tell */
+  return ( status == HAL_OK ? len : 0 );
+}
 /* USER CODE END 0 */
 
 /**
