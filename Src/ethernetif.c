@@ -502,19 +502,25 @@ void ethernetif_input(struct netif *netif)
 
   /* move received packet into a new pbuf */
   p = low_level_input(netif);
-    
+
   /* no packet could be read, silently ignore this */
   if (p == NULL) return;
-    
+
+  /* enable LED to monitor LwIP stack activity */
+  HAL_GPIO_WritePin(BRD_LED1_B_GPIO_Port, BRD_LED1_B_Pin, GPIO_PIN_SET);
+
   /* entry point to the LwIP stack */
   err = netif->input(p, netif);
-    
+
   if (err != ERR_OK)
   {
     LWIP_DEBUGF(NETIF_DEBUG, ("ethernetif_input: IP input error\n"));
     pbuf_free(p);
-    p = NULL;    
+    p = NULL;
   }
+
+  /* disable LED */
+  HAL_GPIO_WritePin(BRD_LED1_B_GPIO_Port, BRD_LED1_B_Pin, GPIO_PIN_RESET);
 }
 
 #if !LWIP_ARP
