@@ -145,6 +145,9 @@ Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
 Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
 Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c  
 
+C_SOURCES += \
+Src/ex_servers.c
+
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32f765xx.s

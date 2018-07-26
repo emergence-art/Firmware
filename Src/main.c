@@ -55,6 +55,7 @@
 /* USER CODE BEGIN Includes */
 #include <errno.h>
 #include <sys/unistd.h>
+#include "ex_servers.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -177,7 +178,7 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
-
+  EX_SERVERS_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
