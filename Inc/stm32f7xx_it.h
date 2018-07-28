@@ -70,8 +70,10 @@ void EXTI15_10_IRQHandler(void);
 void DMA1_Stream7_IRQHandler(void);
 void TIM5_IRQHandler(void);
 void UART5_IRQHandler(void);
+void DMA2_Stream1_IRQHandler(void);
 void ETH_IRQHandler(void);
 void OTG_FS_IRQHandler(void);
+void DMA2_Stream6_IRQHandler(void);
 
 #ifdef __cplusplus
 }

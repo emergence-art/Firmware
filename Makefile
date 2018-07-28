@@ -146,6 +146,7 @@ Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
 Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c  
 
 C_SOURCES += \
+Src/ex_leds.c \
 Src/ex_servers.c
 
 # ASM sources
@@ -197,6 +198,7 @@ AS_DEFS =
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F765xx \
+-DUSE_HAL_TIM_REGISTER_CALLBACKS \
 -DLWIP_DEBUG
 
 
