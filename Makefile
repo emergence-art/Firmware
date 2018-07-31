@@ -146,6 +146,7 @@ Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
 Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c  
 
 C_SOURCES += \
+Src/syscalls.c \
 Src/ex_leds.c \
 Src/ex_servers.c
 
