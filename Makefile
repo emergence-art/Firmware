@@ -159,6 +159,7 @@ Src/syscalls.c \
 Src/tinyosc.c \
 Src/pio.c \
 Src/led.c \
+Src/motor.c \
 Src/ex_leds.c \
 Src/ex_motors.c \
 Src/ex_servers.c
