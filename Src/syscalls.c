@@ -24,11 +24,14 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include "stm32f7xx_hal.h"
+#include "usbd_cdc_if.h"
 
 extern UART_HandleTypeDef huart5;
+extern USBD_HandleTypeDef hUsbDeviceFS;
 
 #define UART_Handle   (&huart5)
 #define UART_Timeout  (10)
+#define USBD_Timeout  (10)
 
 // extern int __io_getchar(void) __attribute__((weak));
 // extern int __io_putchar(int ch) __attribute__((weak));
@@ -96,6 +99,7 @@ void _exit (int status)
 //   return len;
 // }
 
+#ifdef USE_SERIAL_OVER_UART
 int _read(int file, char *ptr, int len)
 {
   /* Check file argument */
@@ -112,6 +116,22 @@ int _read(int file, char *ptr, int len)
   /* Return # of bytes read - as best we can tell */
   return ( status == HAL_OK ? len : 0 );
 }
+#endif /* USE_SERIAL_OVER_UART */
+
+#ifdef USE_SERIAL_OVER_USB
+int _read(int file, char *ptr, int len)
+{
+  /* Check file argument */
+  if (file != STDIN_FILENO)
+  {
+    errno = EBADF;
+    return -1;
+  }
+
+  /* Operation not yet supported */
+  return -1;
+}
+#endif /* USE_SERIAL_OVER_USB */
 
 // int _write(int file, char *ptr, int len)
 // {
@@ -125,6 +145,7 @@ int _read(int file, char *ptr, int len)
 //   return len;
 // }
 
+#ifdef USE_SERIAL_OVER_UART
 int _write(int file, char *ptr, int len)
 {
   /* Check file argument */
@@ -141,6 +162,44 @@ int _write(int file, char *ptr, int len)
   /* Return # of bytes written - as best we can tell */
   return ( status == HAL_OK ? len : 0 );
 }
+#endif /* USE_SERIAL_OVER_UART */
+
+#ifdef USE_SERIAL_OVER_USB
+int _write(int file, char *ptr, int len)
+{
+  /* Check file argument */
+  if ((file != STDOUT_FILENO) && (file != STDERR_FILENO))
+  {
+    errno = EBADF;
+    return -1;
+  }
+
+  /* Transmit data through USB CDC */
+  USBD_StatusTypeDef status;
+  status = CDC_Transmit_FS((uint8_t*)ptr, len);
+
+  /* Wait until the end of the transfer (Blocking) */
+  if (status == USBD_OK)
+  {
+    uint32_t tickstart = HAL_GetTick();
+    USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
+    while (hcdc->TxState != 0)
+    {
+      /* Check for the Timeout */
+      if (USBD_Timeout != HAL_MAX_DELAY)
+      {
+        if ( (USBD_Timeout == 0U) || ((HAL_GetTick()-tickstart) >= USBD_Timeout) )
+        {
+          status = USBD_FAIL;
+        }
+      }
+    }
+  }
+
+  /* Return # of bytes written - as best we can tell */
+  return ( status == USBD_OK ? len : 0 );
+}
+#endif /* USE_SERIAL_OVER_USB */
 
 int _fstat(int file, struct stat *st)
 {
