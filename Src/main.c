@@ -81,7 +81,16 @@ DMA_HandleTypeDef hdma_uart5_tx;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+static const char Banner[] = "\n\
+  ('-.  _   .-')       ('-.  _  .-')                 ('-.       .-') _             ('-.\n\
+_(  OO)( '.( OO )_   _(  OO)( \\( -O )              _(  OO)     ( OO ) )          _(  OO)\n\
+(,------.,--.   ,--.)(,------.,------.   ,----.    (,------.,--./ ,--,'  .-----. (,------.\n\
+|  .---'|   `.'   |  |  .---'|   /`. ' '  .-./-')  |  .---'|   \\ |  |\\ '  .--./  |  .---'\n\
+|  |    |         |  |  |    |  /  | | |  |_( O- ) |  |    |    \\|  | )|  |('-.  |  |\n\
+(|  '--. |  |'.'|  | (|  '--. |  |_.' | |  | .--, \\(|  '--. |  .     |//_) |OO  )(|  '--.\n\
+|  .--' |  |   |  |  |  .--' |  .  '.'(|  | '. (_/ |  .--' |  |\\    | ||  |`-'|  |  .--'\n\
+|  `---.|  |   |  |  |  `---.|  |\\  \\  |  '--'  |  |  `---.|  | \\   |(_'  '--'\\  |  `---.\n\
+`------'`--'   `--'  `------'`--' '--'  `------'   `------'`--'  `--'   `-----'  `------'\n\n";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,7 +114,10 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-
+static void EX_Init(void)
+{
+  printf("%s", Banner);
+}
 /* USER CODE END 0 */
 
 /**
@@ -154,6 +166,7 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
+  EX_Init();
   EX_LEDS_Init();
   EX_SERVERS_Init();
   /* USER CODE END 2 */
