@@ -18,21 +18,16 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
-#if _WIN32
-#include <winsock2.h>
-#define tosc_strncpy(_dst, _src, _len) strncpy_s(_dst, _len, _src, _TRUNCATE)
-#else
-#include <netinet/in.h>
-#define tosc_strncpy(_dst, _src, _len) strncpy(_dst, _src, _len)
-#endif
-#if __unix__ && !__APPLE__
-#include <endian.h>
-#define htonll(x) htobe64(x)
-#define ntohll(x) be64toh(x)
-#endif
 #include "tinyosc.h"
 
-#define BUNDLE_ID 0x2362756E646C6500L // "#bundle"
+#define htonl(x)  __builtin_bswap32(x)
+#define ntohl(x)  __builtin_bswap32(x)
+#define htonll(x) __builtin_bswap64(x)
+#define ntohll(x) __builtin_bswap64(x)
+
+#define tosc_strncpy(_dst, _src, _len) strncpy(_dst, _src, _len)
+
+#define BUNDLE_ID 0x2362756E646C6500LL // "#bundle"
 
 // http://opensoundcontrol.org/spec-1_0
 int tosc_parseMessage(tosc_message *o, char *buffer, const int len) {
@@ -58,7 +53,11 @@ int tosc_parseMessage(tosc_message *o, char *buffer, const int len) {
 
 // check if first eight bytes are '#bundle '
 bool tosc_isBundle(const char *buffer) {
-  return ((*(const int64_t *) buffer) == htonll(BUNDLE_ID));
+  // return ((*(const int64_t *) buffer) == htonll(BUNDLE_ID));
+  // NOTE Making the 64-bits comparison makes the system hangs!
+  static const uint32_t _BUNDLE_ID_LSB = htonll(BUNDLE_ID) & 0xFFFFFFFF;
+  static const uint32_t _BUNDLE_ID_MSB = htonll(BUNDLE_ID) >> 32;
+  return ( _BUNDLE_ID_LSB == ((uint32_t*)buffer)[0] && _BUNDLE_ID_MSB == ((uint32_t*)buffer)[1] );
 }
 
 void tosc_parseBundle(tosc_bundle *b, char *buffer, const int len) {
@@ -286,7 +285,7 @@ void tosc_printOscBuffer(char *buffer, const int len) {
 }
 
 void tosc_printMessage(tosc_message *osc) {
-  printf("[%i bytes] %s %s",
+  printf("[%li bytes] %s %s",
       osc->len, // the number of bytes in the OSC message
       tosc_getAddress(osc), // the OSC address string, e.g. "/button1"
       tosc_getFormat(osc)); // the OSC format string, e.g. "f"
@@ -308,7 +307,7 @@ void tosc_printMessage(tosc_message *osc) {
       }
       case 'f': printf(" %g", tosc_getNextFloat(osc)); break;
       case 'd': printf(" %g", tosc_getNextDouble(osc)); break;
-      case 'i': printf(" %d", tosc_getNextInt32(osc)); break;
+      case 'i': printf(" %ld", tosc_getNextInt32(osc)); break;
       case 'h': printf(" %lld", tosc_getNextInt64(osc)); break;
       case 't': printf(" %lld", tosc_getNextTimetag(osc)); break;
       case 's': printf(" %s", tosc_getNextString(osc)); break;

@@ -156,6 +156,7 @@ Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c
 
 C_SOURCES += \
 Src/syscalls.c \
+Src/tinyosc.c \
 Src/pio.c \
 Src/ex_leds.c \
 Src/ex_servers.c
