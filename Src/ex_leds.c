@@ -146,4 +146,47 @@ void EX_LEDS_Init(void)
 
   /* Success! */
   printf("EX: LED's successfully initialized!\n");
+
+#ifdef USE_LED_PATTERN
+
+  static uint32_t pattern[EX_LEDS_PER_STRIP] = {
+    0x00000F, 0x00000F, 0x0F0000, 0x00000F, 0x00000F,
+    0x00000F, 0x000F00, 0x000F00, 0x000F00, 0x00000F,
+    0x0F0000, 0x000F00, 0xFFFFFF, 0x000F00, 0x0F0000,
+    0x00000F, 0x000F00, 0x000F00, 0x000F00, 0x00000F,
+    0x00000F, 0x00000F, 0x0F0000, 0x00000F, 0x00000F,
+  };
+
+  /* Enable LED1 Green for status check */
+  HAL_GPIO_WritePin(BRD_LED1_G_GPIO_Port, BRD_LED1_G_Pin, GPIO_PIN_SET);
+
+  /* Enable all channels */
+  LED_Enable(&hledBankAB, LED_CHANNEL_16B);
+  LED_Enable(&hledBankCD, LED_CHANNEL_16B);
+
+  /* Main workloop */
+  size_t offset = 0;
+  while (1)
+  {
+    /* Enable LED2 Blue for frame status check */
+    HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_SET);
+    /* Set all pixels with same pattern data for all channels */
+    for (size_t i=0; i<EX_LEDS_PER_STRIP; i++)
+    {
+      color_t color = {.ARGB = pattern[(i+offset)%EX_LEDS_PER_STRIP]};
+      LED_SetPixels(&hledBankAB, color, i, LED_CHANNEL_16B);
+      LED_SetPixels(&hledBankCD, color, i, LED_CHANNEL_16B);
+    }
+    offset++; // Offset pattern to create a visual update
+    /* Refresh all channels */
+    LED_RefreshPixels(&hledBankAB);
+    LED_RefreshPixels(&hledBankCD);
+    /* Disable LED2 Blue */
+    HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_RESET);
+    /* Wait 100ms for the next frame */
+    HAL_Delay(100);
+  }
+
+#endif /* USE_LED_PATTERN */
+
 }
