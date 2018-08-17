@@ -19,9 +19,9 @@ Move the downloaded package in the *Toolchains* directory and uncompress it. *Ma
 >> ls Toolchains/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-*
 ```
 
-## ST-LINK Utilities
+## ST-LINK utility
 
-The Open-Source version of **ST-LINK Utilities** - [stlink](https://github.com/texane/stlink) developed by [texane](https://github.com/texane) - is a great alternative to STMicroelectronics tools and running on Mac OS X.
+The Open-Source version of **ST-LINK Tools** - [stlink](https://github.com/texane/stlink) developed by [texane](https://github.com/texane) - is a great alternative to STMicroelectronics tools and running on Mac OS X. For more information on ST-LINK/V2, visit [ST-LINK/V2](https://www.st.com/en/development-tools/st-link-v2.html).
 
 ### Installation
 
@@ -29,7 +29,19 @@ I recommend to use *brew* for the installation:
 ```
 >> brew install stlink
 ```
-If you need a custom installation, refer to [stlink](https://github.com/texane/stlink) documentation in GitHub.
+If you need a custom installation, refer to [stlink](https://github.com/texane/stlink) documentation on GitHub.
+
+## DFU utility
+
+DFU is intended to download and upload firmware to/from devices connected over USB. The Open-Source tool **dfu-util** - [dfu-util](https://sourceforge.net/projects/dfu-util/) developed by [tormod](https://sourceforge.net/u/tormod/profile/) - is a host side implementation of the DFU 1.0 and DFU 1.1 specifications of the USB forum.
+
+### Installation
+
+I recommend to use *brew* again for the installation:
+```
+>> brew install dfu-util
+```
+If you need a custom installation, refer to [dfu-util](https://sourceforge.net/projects/dfu-util/) documentation on SourceForge.
 
 # Getting Started
 
@@ -42,9 +54,16 @@ From the project root, simply run *make* to compile Emergence firmware:
 >> make
 ```
 
-## Flashing
+## Flashing using ST-LINK
 
-Then use *st-flash* to flash the binary on your board:
+Connect a ST-LINK/V2 probe to the JTAG/SWD port, then use *st-flash* to flash the binary on your board:
 ```
->> st-flash write build/Emergence.bin 0x8000000
+>> st-flash write build/Emergence.bin 0x08000000
+```
+
+## Flashing using DFU
+
+Connect a USB cable and put the board in DFU mode, then use *st-flash* to flash the binary on your board:
+```
+>> dfu-util -d [0483:df11] -a 0 -s 0x08000000:leave -D build/Emergence.bin
 ```
