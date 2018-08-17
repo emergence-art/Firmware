@@ -24,6 +24,15 @@ DEBUG = 1
 # optimization
 OPT = -Og
 
+SHA1 := $(shell git rev-parse --short `git log -1 --pretty=format:"%H"`)
+ifneq ($(shell git ls-files -m),)
+SHA1 := "$(SHA1)-dirty"
+else
+SHA1 := "$(SHA1)"
+endif
+
+include version.mk
+VERSION := "$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)"
 
 #######################################
 # paths
@@ -198,6 +207,8 @@ AS_DEFS =
 
 # C defines
 C_DEFS =  \
+-DSHA1='$(SHA1)' \
+-DVERSION='$(VERSION)' \
 -DUSE_HAL_DRIVER \
 -DSTM32F765xx \
 -DUSE_HAL_TIM_REGISTER_CALLBACKS \

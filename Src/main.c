@@ -117,6 +117,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 static void EX_Init(void)
 {
   printf("%s", Banner);
+  printf("Build: %s (%s) - %s, %s\n", VERSION, SHA1, __DATE__, __TIME__);
 }
 /* USER CODE END 0 */
 
