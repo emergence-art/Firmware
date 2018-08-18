@@ -74,6 +74,11 @@ struct netif gnetif;
 ip4_addr_t ipaddr;
 ip4_addr_t netmask;
 ip4_addr_t gw;
+#ifndef LWIP_USE_DHCP
+uint8_t IP_ADDRESS[4];
+uint8_t NETMASK_ADDRESS[4];
+uint8_t GATEWAY_ADDRESS[4];
+#endif /* LWIP_USE_DHCP */
 
 /* USER CODE BEGIN 2 */
 
@@ -84,13 +89,44 @@ ip4_addr_t gw;
   */
 void MX_LWIP_Init(void)
 {
+#ifndef LWIP_USE_DHCP
+  uint8_t address = 0;
+  address |= HAL_GPIO_ReadPin(BRD_ID_0_GPIO_Port, BRD_ID_0_Pin) << 0;
+  address |= HAL_GPIO_ReadPin(BRD_ID_1_GPIO_Port, BRD_ID_1_Pin) << 1;
+  address |= HAL_GPIO_ReadPin(BRD_ID_2_GPIO_Port, BRD_ID_2_Pin) << 2;
+  address |= HAL_GPIO_ReadPin(BRD_ID_3_GPIO_Port, BRD_ID_3_Pin) << 3;
+  address |= HAL_GPIO_ReadPin(BRD_ID_4_GPIO_Port, BRD_ID_4_Pin) << 4;
+  address |= HAL_GPIO_ReadPin(BRD_ID_5_GPIO_Port, BRD_ID_5_Pin) << 5;
+  address |= HAL_GPIO_ReadPin(BRD_ID_6_GPIO_Port, BRD_ID_6_Pin) << 6;
+  /* IP addresses initialization */
+  IP_ADDRESS[0] = 192;
+  IP_ADDRESS[1] = 168;
+  IP_ADDRESS[2] = 0;
+  IP_ADDRESS[3] = 100+address;  // Range [100-227]
+  NETMASK_ADDRESS[0] = 255;
+  NETMASK_ADDRESS[1] = 255;
+  NETMASK_ADDRESS[2] = 255;
+  NETMASK_ADDRESS[3] = 0;
+  GATEWAY_ADDRESS[0] = 192;
+  GATEWAY_ADDRESS[1] = 168;
+  GATEWAY_ADDRESS[2] = 0;
+  GATEWAY_ADDRESS[3] = 1;
+#endif /* LWIP_USE_DHCP */
+
   /* Initilialize the LwIP stack without RTOS */
   lwip_init();
 
+#ifdef LWIP_USE_DHCP
   /* IP addresses initialization with DHCP (IPv4) */
   ipaddr.addr = 0;
   netmask.addr = 0;
   gw.addr = 0;
+#else
+  /* IP addresses initialization without DHCP (IPv4) */
+  IP4_ADDR(&ipaddr, IP_ADDRESS[0], IP_ADDRESS[1], IP_ADDRESS[2], IP_ADDRESS[3]);
+  IP4_ADDR(&netmask, NETMASK_ADDRESS[0], NETMASK_ADDRESS[1] , NETMASK_ADDRESS[2], NETMASK_ADDRESS[3]);
+  IP4_ADDR(&gw, GATEWAY_ADDRESS[0], GATEWAY_ADDRESS[1], GATEWAY_ADDRESS[2], GATEWAY_ADDRESS[3]);
+#endif /* LWIP_USE_DHCP */
 
   /* add the network interface (IPv4/IPv6) without RTOS */
   netif_add(&gnetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
@@ -109,8 +145,10 @@ void MX_LWIP_Init(void)
     netif_set_down(&gnetif);
   }
 
+#ifdef LWIP_USE_DHCP
   /* Start DHCP negotiation for a network interface (IPv4) */
   dhcp_start(&gnetif);
+#endif /* LWIP_USE_DHCP */
 
 /* USER CODE BEGIN 3 */
 
