@@ -126,6 +126,36 @@ static void EX_Init(void)
   printf("%s", Banner);
   printf("Build: %s (%s) - %s, %s\n", VERSION, SHA1, __DATE__, __TIME__);
 }
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  /* Check interrupt pin */
+  switch (GPIO_Pin)
+  {
+    case BRD_USER_BUTTON_Pin:
+      printf("EX: Emergency stop requested by user\n");
+      break;
+    case DRV_nFAULT_A_Pin:
+      printf("EX: Fault detected with MOTOR's Bank A\n");
+      break;
+    case DRV_nFAULT_B_Pin:
+      printf("EX: Fault detected with MOTOR's Bank B\n");
+      break;
+    case DRV_nFAULT_C_Pin:
+      printf("EX: Fault detected with MOTOR's Bank C\n");
+      break;
+    case DRV_nFAULT_D_Pin:
+      printf("EX: Fault detected with MOTOR's Bank D\n");
+      break;
+  }
+
+  /* Disable motors and leds */
+  EX_LEDS_Disable();
+  EX_MOTORS_Disable();
+
+  /* Notify operator */
+  HAL_GPIO_WritePin(BRD_LED2_R_GPIO_Port, BRD_LED2_R_Pin, GPIO_PIN_SET);
+}
 /* USER CODE END 0 */
 
 /**
