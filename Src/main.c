@@ -127,6 +127,17 @@ static void EX_Init(void)
   printf("Build: %s (%s) - %s, %s\n", VERSION, SHA1, __DATE__, __TIME__);
 }
 
+static void EX_PostInit(void)
+{
+  /* Setup */
+  EX_LEDS_Setup();
+  EX_MOTORS_Setup();
+
+  /* Enable */
+  EX_LEDS_Enable();
+  EX_MOTORS_Enable();
+}
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   /* Check interrupt pin */
@@ -209,6 +220,7 @@ int main(void)
   EX_LEDS_Init();
   EX_MOTORS_Init();
   EX_SERVERS_Init();
+  EX_PostInit();
   /* USER CODE END 2 */
 
   /* Infinite loop */
