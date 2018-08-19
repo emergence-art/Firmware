@@ -30,6 +30,13 @@
 #define EX_LEDS_PER_STRIP   (25)
 #define EX_LEDS_BRIGHTNESS  (255)
 
+/* Private defines -----------------------------------------------------------*/
+
+#define LED_CHANNELS_BANK_A  LED_CHANNEL_8BL
+#define LED_CHANNELS_BANK_B  LED_CHANNEL_8BH
+#define LED_CHANNELS_BANK_C  LED_CHANNEL_8BL
+#define LED_CHANNELS_BANK_D  LED_CHANNEL_8BH
+
 /* Private variables ---------------------------------------------------------*/
 
 PIO_HandleTypeDef hpioEnableBankA;
@@ -111,23 +118,23 @@ void EX_LEDS_Init(void)
   ConfigChannel.Brightness = EX_LEDS_BRIGHTNESS;
 
   ConfigChannel.hpioEnable = &hpioEnableBankA;
-  if (LED_Config(&hledBankAB, &ConfigChannel, LED_CHANNEL_8BL) != OBJ_OK)
+  if (LED_Config(&hledBankAB, &ConfigChannel, LED_CHANNELS_BANK_A) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
   ConfigChannel.hpioEnable = &hpioEnableBankB;
-  if (LED_Config(&hledBankAB, &ConfigChannel, LED_CHANNEL_8BH) != OBJ_OK)
+  if (LED_Config(&hledBankAB, &ConfigChannel, LED_CHANNELS_BANK_B) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
   ConfigChannel.hpioEnable = &hpioEnableBankC;
-  if (LED_Config(&hledBankCD, &ConfigChannel, LED_CHANNEL_8BL) != OBJ_OK)
+  if (LED_Config(&hledBankCD, &ConfigChannel, LED_CHANNELS_BANK_C) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
   ConfigChannel.hpioEnable = &hpioEnableBankD;
-  if (LED_Config(&hledBankCD, &ConfigChannel, LED_CHANNEL_8BH) != OBJ_OK)
+  if (LED_Config(&hledBankCD, &ConfigChannel, LED_CHANNELS_BANK_D) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -146,9 +153,74 @@ void EX_LEDS_Init(void)
 
   /* Success! */
   printf("EX: LED's successfully initialized!\n");
+}
 
-#ifdef USE_LED_PATTERN
+void EX_LEDS_Setup(void)
+{
+  /* Local variables */
+  HAL_StatusTypeDef hal_status = HAL_OK;
+  OBJ_StatusTypeDef obj_status = OBJ_OK;
 
+  /* Check status */
+  if (hal_status == HAL_OK && obj_status == OBJ_OK)
+  {
+    printf("EX: LED's set up\n");
+  }
+  else
+  {
+    printf("EX: Cannot set up LED's\n");
+    HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+  }
+}
+
+void EX_LEDS_Enable(void)
+{
+  /* Local variables */
+  OBJ_StatusTypeDef status = OBJ_OK;
+
+  /* Enable leds */
+  status |= LED_Enable(&hledBankAB, LED_CHANNELS_BANK_A);
+  status |= LED_Enable(&hledBankAB, LED_CHANNELS_BANK_B);
+  status |= LED_Enable(&hledBankCD, LED_CHANNELS_BANK_C);
+  status |= LED_Enable(&hledBankCD, LED_CHANNELS_BANK_D);
+
+  /* Check status */
+  if (status == OBJ_OK)
+  {
+    printf("EX: LED's enabled\n");
+  }
+  else
+  {
+    printf("EX: Cannot enable LED's\n");
+    HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+  }
+}
+
+void EX_LEDS_Disable(void)
+{
+  /* Local variables */
+  OBJ_StatusTypeDef status = OBJ_OK;
+
+  /* Disable leds */
+  status |= LED_Disable(&hledBankAB, LED_CHANNELS_BANK_A);
+  status |= LED_Disable(&hledBankAB, LED_CHANNELS_BANK_B);
+  status |= LED_Disable(&hledBankCD, LED_CHANNELS_BANK_C);
+  status |= LED_Disable(&hledBankCD, LED_CHANNELS_BANK_D);
+
+  /* Check status */
+  if (status == OBJ_OK)
+  {
+    printf("EX: LED's disabled\n");
+  }
+  else
+  {
+    printf("EX: Cannot disable LED's\n");
+    HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+  }
+}
+
+void EX_LEDS_RunTestMode(void)
+{
   static uint32_t pattern[EX_LEDS_PER_STRIP] = {
     0x00000F, 0x00000F, 0x0F0000, 0x00000F, 0x00000F,
     0x00000F, 0x000F00, 0x000F00, 0x000F00, 0x00000F,
@@ -161,8 +233,7 @@ void EX_LEDS_Init(void)
   HAL_GPIO_WritePin(BRD_LED1_G_GPIO_Port, BRD_LED1_G_Pin, GPIO_PIN_SET);
 
   /* Enable all channels */
-  LED_Enable(&hledBankAB, LED_CHANNEL_16B);
-  LED_Enable(&hledBankCD, LED_CHANNEL_16B);
+  EX_LEDS_Enable();
 
   /* Main workloop */
   size_t offset = 0;
@@ -186,7 +257,4 @@ void EX_LEDS_Init(void)
     /* Wait 100ms for the next frame */
     HAL_Delay(100);
   }
-
-#endif /* USE_LED_PATTERN */
-
 }
