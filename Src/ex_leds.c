@@ -24,6 +24,7 @@
 #include "obj.h"
 #include "pio.h"
 #include "led.h"
+#include "ex_leds.h"
 
 /* Private constants ---------------------------------------------------------*/
 
@@ -219,7 +220,7 @@ void EX_LEDS_Disable(void)
   }
 }
 
-void EX_LEDS_RunTestMode(void)
+void EX_LEDS_RunTestMode(_Bool loop, uint32_t delay)
 {
   static uint32_t pattern[EX_LEDS_PER_STRIP] = {
     0x00000F, 0x00000F, 0x0F0000, 0x00000F, 0x00000F,
@@ -232,12 +233,9 @@ void EX_LEDS_RunTestMode(void)
   /* Enable LED1 Green for status check */
   HAL_GPIO_WritePin(BRD_LED1_G_GPIO_Port, BRD_LED1_G_Pin, GPIO_PIN_SET);
 
-  /* Enable all channels */
-  EX_LEDS_Enable();
-
   /* Main workloop */
   size_t offset = 0;
-  while (1)
+  while (loop)
   {
     /* Enable LED2 Blue for frame status check */
     HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_SET);
@@ -254,7 +252,10 @@ void EX_LEDS_RunTestMode(void)
     LED_RefreshPixels(&hledBankCD);
     /* Disable LED2 Blue */
     HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_RESET);
-    /* Wait 100ms for the next frame */
-    HAL_Delay(100);
+    /* Wait for the next frame */
+    if (delay > 0)
+    {
+      HAL_Delay(delay);
+    }
   }
 }

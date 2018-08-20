@@ -25,4 +25,4 @@ void EX_LEDS_Init(void);
 void EX_LEDS_Setup(void);
 void EX_LEDS_Enable(void);
 void EX_LEDS_Disable(void);
-void EX_LEDS_RunTestMode(void);
+void EX_LEDS_RunTestMode(_Bool loop, uint32_t delay);
