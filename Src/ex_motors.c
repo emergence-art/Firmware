@@ -24,6 +24,7 @@
 #include "obj.h"
 #include "pio.h"
 #include "motor.h"
+#include "ex_motors.h"
 
 #include <math.h>
 
@@ -265,19 +266,13 @@ void EX_MOTORS_Disable(void)
   }
 }
 
-void EX_MOTORS_RunTestMode(void)
+void EX_MOTORS_RunTestMode(_Bool loop, uint32_t delay)
 {
   /* Enable LED1 Green for status check */
   HAL_GPIO_WritePin(BRD_LED1_G_GPIO_Port, BRD_LED1_G_Pin, GPIO_PIN_SET);
 
-  /* Setup all channels */
-  EX_MOTORS_Setup();
-
-  /* Enable all channels */
-  EX_MOTORS_Enable();
-
   motion_t motion = {.timestamp=0.0, .position=0.0, .velocity=0.0, .acceleration=0.0};
-  while (1)
+  while (loop)
   {
     /* Enable LED2 Blue for frame status check */
     HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_SET);
@@ -290,7 +285,10 @@ void EX_MOTORS_RunTestMode(void)
     // MOTOR_SetMotion(&hmotorBankD, motion, MOTOR_CHANNEL_8B);
     /* Disable LED2 Blue */
     HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_RESET);
-    /* Wait 10ms for the next frame */
-    HAL_Delay(10);
+    /* Wait for the next frame */
+    if (delay > 0)
+    {
+      HAL_Delay(delay);
+    }
   }
 }

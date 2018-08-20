@@ -25,4 +25,4 @@ void EX_MOTORS_Init(void);
 void EX_MOTORS_Setup(void);
 void EX_MOTORS_Enable(void);
 void EX_MOTORS_Disable(void);
-void EX_MOTORS_RunTestMode(void);
+void EX_MOTORS_RunTestMode(_Bool loop, uint32_t delay);
