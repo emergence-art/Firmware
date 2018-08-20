@@ -44,7 +44,7 @@ PIO_HandleTypeDef hpioEnableBankD;
 MOTOR_HandleTypeDef hmotorBankA;
 MOTOR_HandleTypeDef hmotorBankB;
 MOTOR_HandleTypeDef hmotorBankC;
-MOTOR_HandleTypeDef hmotorBankD;
+// MOTOR_HandleTypeDef hmotorBankD;
 
 /* From main.c */
 extern DAC_HandleTypeDef hdac;
@@ -123,14 +123,14 @@ void EX_MOTORS_Init(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  hmotorBankD.Init.Port    = GPIOG;
-  hmotorBankD.Init.htim    = &htim8;
-  hmotorBankD.Init.hdma    = &hdma_tim8_ch4_trig_com;
-  hmotorBankD.Init.Channel = TIM_CHANNEL_4;
-  if (MOTOR_Init(&hmotorBankD) != OBJ_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
+  // hmotorBankD.Init.Port    = GPIOG;
+  // hmotorBankD.Init.htim    = &htim8;
+  // hmotorBankD.Init.hdma    = &hdma_tim8_ch4_trig_com;
+  // hmotorBankD.Init.Channel = TIM_CHANNEL_4;
+  // if (MOTOR_Init(&hmotorBankD) != OBJ_OK)
+  // {
+  //   _Error_Handler(__FILE__, __LINE__);
+  // }
 
   /* Configure MOTOR drivers channels */
 
@@ -152,11 +152,11 @@ void EX_MOTORS_Init(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  ConfigChannel.hpioEnable = &hpioEnableBankD;
-  if (MOTOR_Config(&hmotorBankD, &ConfigChannel, MOTOR_CHANNELS_BANK_D) != OBJ_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
+  // ConfigChannel.hpioEnable = &hpioEnableBankD;
+  // if (MOTOR_Config(&hmotorBankD, &ConfigChannel, MOTOR_CHANNELS_BANK_D) != OBJ_OK)
+  // {
+  //   _Error_Handler(__FILE__, __LINE__);
+  // }
 
   /* Allocate MOTOR drivers memory */
 
@@ -175,10 +175,10 @@ void EX_MOTORS_Init(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  if (MOTOR_Alloc(&hmotorBankD) != OBJ_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
+  // if (MOTOR_Alloc(&hmotorBankD) != OBJ_OK)
+  // {
+  //   _Error_Handler(__FILE__, __LINE__);
+  // }
 
   /* Success! */
   printf("EX: MOTOR's successfully initialized!\n");
@@ -205,7 +205,7 @@ void EX_MOTORS_Setup(void)
   HAL_GPIO_WritePin(DRV_nRESET_A_GPIO_Port, DRV_nRESET_A_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(DRV_nRESET_B_GPIO_Port, DRV_nRESET_B_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(DRV_nRESET_C_GPIO_Port, DRV_nRESET_C_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(DRV_nRESET_D_GPIO_Port, DRV_nRESET_D_Pin, GPIO_PIN_SET);
+  // HAL_GPIO_WritePin(DRV_nRESET_D_GPIO_Port, DRV_nRESET_D_Pin, GPIO_PIN_SET);
 
   /* Check status */
   if (hal_status == HAL_OK && obj_status == OBJ_OK)
@@ -228,7 +228,7 @@ void EX_MOTORS_Enable(void)
   status |= MOTOR_Enable(&hmotorBankA, MOTOR_CHANNELS_BANK_A);
   status |= MOTOR_Enable(&hmotorBankB, MOTOR_CHANNELS_BANK_B);
   status |= MOTOR_Enable(&hmotorBankC, MOTOR_CHANNELS_BANK_C);
-  status |= MOTOR_Enable(&hmotorBankD, MOTOR_CHANNELS_BANK_D);
+  // status |= MOTOR_Enable(&hmotorBankD, MOTOR_CHANNELS_BANK_D);
 
   /* Check status */
   if (status == OBJ_OK)
@@ -251,7 +251,7 @@ void EX_MOTORS_Disable(void)
   status |= MOTOR_Disable(&hmotorBankA, MOTOR_CHANNELS_BANK_A);
   status |= MOTOR_Disable(&hmotorBankB, MOTOR_CHANNELS_BANK_B);
   status |= MOTOR_Disable(&hmotorBankC, MOTOR_CHANNELS_BANK_C);
-  status |= MOTOR_Disable(&hmotorBankD, MOTOR_CHANNELS_BANK_D);
+  // status |= MOTOR_Disable(&hmotorBankD, MOTOR_CHANNELS_BANK_D);
 
   /* Check status */
   if (status == OBJ_OK)
@@ -287,7 +287,7 @@ void EX_MOTORS_RunTestMode(void)
     MOTOR_SetMotion(&hmotorBankA, motion, MOTOR_CHANNEL_8B);
     MOTOR_SetMotion(&hmotorBankB, motion, MOTOR_CHANNEL_8B);
     MOTOR_SetMotion(&hmotorBankC, motion, MOTOR_CHANNEL_8B);
-    MOTOR_SetMotion(&hmotorBankD, motion, MOTOR_CHANNEL_8B);
+    // MOTOR_SetMotion(&hmotorBankD, motion, MOTOR_CHANNEL_8B);
     /* Disable LED2 Blue */
     HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_RESET);
     /* Wait 10ms for the next frame */
