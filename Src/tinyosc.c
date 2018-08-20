@@ -116,13 +116,15 @@ float tosc_getNextFloat(tosc_message *o) {
   // convert from big-endian (network btye order)
   const uint32_t i = ntohl(*((uint32_t *) o->marker));
   o->marker += 4;
-  return *((float *) (&i));
+  char *p = ((char *) (&i));
+  return *((float *) p);
 }
 
 double tosc_getNextDouble(tosc_message *o) {
   const uint64_t i = ntohll(*((uint64_t *) o->marker));
   o->marker += 8;
-  return *((double *) (&i));
+  char *p = ((char *) (&i));
+  return *((double *) p);
 }
 
 const char *tosc_getNextString(tosc_message *o) {
@@ -199,14 +201,16 @@ static uint32_t tosc_vwrite(char *buffer, const int len,
       case 'f': {
         if (i + 4 > len) return -3;
         const float f = (float) va_arg(ap, double);
-        *((uint32_t *) (buffer+i)) = htonl(*((uint32_t *) &f));
+        char *p = ((char *) (&f));
+        *((uint32_t *) (buffer+i)) = htonl(*((uint32_t *) p));
         i += 4;
         break;
       }
       case 'd': {
         if (i + 8 > len) return -3;
         const double f = (double) va_arg(ap, double);
-        *((uint64_t *) (buffer+i)) = htonll(*((uint64_t *) &f));
+        char *p = ((char *) (&f));
+        *((uint64_t *) (buffer+i)) = htonll(*((uint64_t *) p));
         i += 8;
         break;
       }
