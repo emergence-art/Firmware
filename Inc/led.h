@@ -106,7 +106,7 @@ OBJ_StatusTypeDef LED_Config(LED_HandleTypeDef *hled, LED_Channel_ConfigTypeDef 
 OBJ_StatusTypeDef LED_Enable(LED_HandleTypeDef *hled, uint32_t channels);
 OBJ_StatusTypeDef LED_Disable(LED_HandleTypeDef *hled, uint32_t channels);
 
-OBJ_StatusTypeDef LED_SetPixels(LED_HandleTypeDef *hled, color_t color, uint32_t position, uint32_t channels);
+OBJ_StatusTypeDef LED_SetPixels(LED_HandleTypeDef *hled, uint32_t argb, uint32_t position, uint32_t channels);
 OBJ_StatusTypeDef LED_RefreshPixels(LED_HandleTypeDef *hled);
 
 /* Private macros ------------------------------------------------------------*/

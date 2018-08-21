@@ -40,13 +40,13 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-PIO_HandleTypeDef hpioEnableBankA;
-PIO_HandleTypeDef hpioEnableBankB;
-PIO_HandleTypeDef hpioEnableBankC;
-PIO_HandleTypeDef hpioEnableBankD;
+static PIO_HandleTypeDef hpioEnableBankA;
+static PIO_HandleTypeDef hpioEnableBankB;
+static PIO_HandleTypeDef hpioEnableBankC;
+static PIO_HandleTypeDef hpioEnableBankD;
 
-LED_HandleTypeDef hledBankAB;
-LED_HandleTypeDef hledBankCD;
+static LED_HandleTypeDef hledBankAB;
+static LED_HandleTypeDef hledBankCD;
 
 /* From main.c */
 extern TIM_HandleTypeDef htim1;
@@ -220,6 +220,50 @@ void EX_LEDS_Disable(void)
   }
 }
 
+void EX_LEDS_SetPixel(uint32_t argb, uint32_t position, uint32_t channel)
+{
+  /* Local variables */
+  OBJ_StatusTypeDef status = OBJ_OK;
+
+  /* Set pixel */
+  if (channel < 16)
+  {
+    status = LED_SetPixels(&hledBankAB, argb, position, 1<<channel);
+  }
+  else if (channel < 32)
+  {
+    status = LED_SetPixels(&hledBankCD, argb, position, 1<<(channel-16));
+  }
+  else
+  {
+    status = OBJ_ERROR;
+  }
+
+  /* Check status */
+  if (status != OBJ_OK)
+  {
+    printf("EX: Cannot set LED's pixel (position %lu, channel %lu)\n", position, channel);
+    HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+  }
+}
+
+void EX_LEDS_RefreshPixels(void)
+{
+  /* Local variables */
+  OBJ_StatusTypeDef status = OBJ_OK;
+
+  /* refresh pixels */
+  status |= LED_RefreshPixels(&hledBankAB);
+  status |= LED_RefreshPixels(&hledBankCD);
+
+  /* Check status */
+  if (status != OBJ_OK)
+  {
+    printf("EX: Cannot refresh LED's pixels\n");
+    HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+  }
+}
+
 void EX_LEDS_RunTestMode(_Bool loop, uint32_t delay)
 {
   static uint32_t pattern[EX_LEDS_PER_STRIP] = {
@@ -242,9 +286,9 @@ void EX_LEDS_RunTestMode(_Bool loop, uint32_t delay)
     /* Set all pixels with same pattern data for all channels */
     for (size_t i=0; i<EX_LEDS_PER_STRIP; i++)
     {
-      color_t color = {.ARGB = pattern[(i+offset)%EX_LEDS_PER_STRIP]};
-      LED_SetPixels(&hledBankAB, color, i, LED_CHANNEL_16B);
-      LED_SetPixels(&hledBankCD, color, i, LED_CHANNEL_16B);
+      uint32_t argb = pattern[(i+offset)%EX_LEDS_PER_STRIP];
+      LED_SetPixels(&hledBankAB, argb, i, LED_CHANNEL_16B);
+      LED_SetPixels(&hledBankCD, argb, i, LED_CHANNEL_16B);
     }
     offset++; // Offset pattern to create a visual update
     /* Refresh all channels */
