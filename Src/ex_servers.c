@@ -20,13 +20,24 @@
 
 
 /* Includes ------------------------------------------------------------------*/
+#include <string.h>
 #include "lwip/pbuf.h"
 #include "lwip/udp.h"
+#include "tinyosc.h"
+#include "ex_leds.h"
+#include "ex_motors.h"
 
 /* Private defines -----------------------------------------------------------*/
-#define UDP_PORT_SYSTEM        10000
-#define UDP_PORT_MODULE_BEGIN  10001
-#define UDP_PORT_MODULE_END    10032
+
+#define UDP_PORT_SYSTEM  10000
+#define UDP_PORT_MODULE  10001
+
+/*  Emergence OSC bundle content
+ *  [ LED(25, argb) + MOTOR(1, position) + MOTOR(1, velocity) ]
+ */
+#define OSC_NB_OF_MESSAGES       27
+#define OSC_LEDS_MESSAGE_INDEX    0
+#define OSC_MOTOR_MESSAGE_INDEX  25
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -74,8 +85,25 @@ static err_t udp_server_init(const ip_addr_t *addr, u16_t port, udp_recv_fn call
 
 static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const ip_addr_t *addr, u16_t port)
 {
-  /* Process [...] */
-  printf("EX: System callback on port %u\n", upcb->local_port);
+  if (p->len == p->tot_len)
+  {
+    if (tosc_isBundle(p->payload))
+    {
+      printf("EX: Bundle OSC packet not supported for system control\n");
+      HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+    }
+    else
+    {
+      tosc_message osc;
+      tosc_parseMessage(&osc, p->payload, p->len);
+      tosc_printMessage(&osc); // TODO
+    }
+  }
+  else
+  {
+    printf("EX: System callback designed for single packet buffer only\n");
+    HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+  }
 
   /* Free the p buffer */
   pbuf_free(p);
@@ -83,8 +111,68 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
 
 static void module_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const ip_addr_t *addr, u16_t port)
 {
-  /* Process [...] */
-  printf("EX: Module callback on port %u\n", upcb->local_port);
+  /* Allocate the local buffer based on p buffer tot_len */
+  const uint16_t length = p->tot_len;
+  char *buffer = malloc(length);
+
+  /* Fill the local buffer with pbuf chain */
+  char *ptr = buffer;
+  memcpy(ptr, p->payload, p->len);
+  struct pbuf *q = p;
+  while (q->len != q->tot_len)
+  {
+    q = q->next;
+    ptr += q->len;
+    memcpy(ptr, q->payload, q->len);
+  }
+
+  /* Parse OSC packet */
+  if (tosc_isBundle(buffer))
+  {
+    tosc_bundle bundle;
+    tosc_parseBundle(&bundle, buffer, length);
+    uint64_t timetag = tosc_getTimetag(&bundle);
+    tosc_message osc;
+    while (tosc_getNextMessage(&bundle, &osc))
+    {
+      // tosc_printMessage(&osc);
+      for ( size_t i = 0 ; osc.format[i] != '\0' ; i++ )
+      {
+        if (osc.format[i] == 'i')
+        {
+          uint16_t channel = i/OSC_NB_OF_MESSAGES;
+          if (i%OSC_NB_OF_MESSAGES == OSC_MOTOR_MESSAGE_INDEX)
+          {
+            int32_t position = tosc_getNextInt32(&osc);
+            i++; // We assume it's Int32
+            int32_t velocity = tosc_getNextInt32(&osc);
+            EX_MOTORS_SetMotion(timetag, position, velocity, channel);
+          }
+          else
+          {
+            uint32_t argb = (uint32_t)(tosc_getNextInt32(&osc));
+            EX_LEDS_SetPixel(argb, i%OSC_NB_OF_MESSAGES, channel);
+          }
+        }
+        else
+        {
+          printf("EX: Bundle OSC packet contains a non-integer value...\n");
+          HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+        }
+      }
+    }
+  }
+  else
+  {
+    printf("EX: Bundle OSC packet expected for module control\n");
+    HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+  }
+
+  /* Refresh LED's once all pixels are set */
+  EX_LEDS_RefreshPixels();
+
+  /* Free the local buffer */
+  free(buffer);
 
   /* Free the p buffer */
   pbuf_free(p);
@@ -104,15 +192,12 @@ void EX_SERVERS_Init(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  /* Initialize modules */
-  for ( int port = UDP_PORT_MODULE_BEGIN ; port < UDP_PORT_MODULE_END ; port++ )
+  /* Initialize module */
+  err = udp_server_init(IP_ADDR_ANY, UDP_PORT_MODULE, module_callback);
+  if (err != ERR_OK)
   {
-    err = udp_server_init(IP_ADDR_ANY, port, module_callback);
-    if (err != ERR_OK)
-    {
-      printf("EX: Module server cannot be initialized on port %u - error %i\n", port, err);
-      _Error_Handler(__FILE__, __LINE__);
-    }
+    printf("EX: Module server cannot be initialized - error %i\n", err);
+    _Error_Handler(__FILE__, __LINE__);
   }
 
   /* Success! */
