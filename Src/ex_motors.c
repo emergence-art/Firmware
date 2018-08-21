@@ -37,15 +37,15 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-PIO_HandleTypeDef hpioEnableBankA;
-PIO_HandleTypeDef hpioEnableBankB;
-PIO_HandleTypeDef hpioEnableBankC;
-PIO_HandleTypeDef hpioEnableBankD;
+static PIO_HandleTypeDef hpioEnableBankA;
+static PIO_HandleTypeDef hpioEnableBankB;
+static PIO_HandleTypeDef hpioEnableBankC;
+static PIO_HandleTypeDef hpioEnableBankD;
 
-MOTOR_HandleTypeDef hmotorBankA;
-MOTOR_HandleTypeDef hmotorBankB;
-MOTOR_HandleTypeDef hmotorBankC;
-// MOTOR_HandleTypeDef hmotorBankD;
+static MOTOR_HandleTypeDef hmotorBankA;
+static MOTOR_HandleTypeDef hmotorBankB;
+static MOTOR_HandleTypeDef hmotorBankC;
+// static MOTOR_HandleTypeDef hmotorBankD;
 
 /* From main.c */
 extern DAC_HandleTypeDef hdac;
@@ -266,23 +266,59 @@ void EX_MOTORS_Disable(void)
   }
 }
 
+void EX_MOTORS_SetMotion(uint64_t timestamp, int32_t position, int32_t velocity, uint32_t channel)
+{
+  /* Local variables */
+  OBJ_StatusTypeDef status = OBJ_OK;
+
+  /* Set motion */
+  if (channel < 8)
+  {
+    status = MOTOR_SetMotion(&hmotorBankA, timestamp, position, velocity, 1<<channel);
+  }
+  else if (channel < 16)
+  {
+    status = MOTOR_SetMotion(&hmotorBankB, timestamp, position, velocity, 1<<(channel-8));
+  }
+  else if (channel < 24)
+  {
+    status = MOTOR_SetMotion(&hmotorBankC, timestamp, position, velocity, 1<<(channel-16));
+  }
+  // else if (channel < 32)
+  // {
+  //   status = MOTOR_SetMotion(&hmotorBankD, timestamp, position, velocity, 1<<(channel-24));
+  // }
+  else
+  {
+    status = OBJ_ERROR;
+  }
+
+  /* Check status */
+  if (status != OBJ_OK)
+  {
+    printf("EX: Cannot set MOTOR's position (channel %lu)\n", channel);
+    HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+  }
+}
+
 void EX_MOTORS_RunTestMode(_Bool loop, uint32_t delay)
 {
   /* Enable LED1 Green for status check */
   HAL_GPIO_WritePin(BRD_LED1_G_GPIO_Port, BRD_LED1_G_Pin, GPIO_PIN_SET);
 
-  motion_t motion = {.timestamp=0.0, .position=0.0, .velocity=0.0, .acceleration=0.0};
+  uint64_t timestamp = (uint64_t)(10.0*M_PI);
   while (loop)
   {
     /* Enable LED2 Blue for frame status check */
     HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_SET);
     /* Set all motors with same motion for all channels */
-    motion.timestamp += 0.010;
-    motion.velocity = 10.0*sin(motion.timestamp);
-    MOTOR_SetMotion(&hmotorBankA, motion, MOTOR_CHANNEL_8B);
-    MOTOR_SetMotion(&hmotorBankB, motion, MOTOR_CHANNEL_8B);
-    MOTOR_SetMotion(&hmotorBankC, motion, MOTOR_CHANNEL_8B);
-    // MOTOR_SetMotion(&hmotorBankD, motion, MOTOR_CHANNEL_8B);
+    int32_t position = 5.0*(1.0+sin(1.0*timestamp/10.0));
+    int32_t velocity = 5.0*(1.0+cos(1.0*timestamp/10.0));
+    timestamp += 1;
+    MOTOR_SetMotion(&hmotorBankA, timestamp, position, velocity, MOTOR_CHANNEL_8B);
+    MOTOR_SetMotion(&hmotorBankB, timestamp, position, velocity, MOTOR_CHANNEL_8B);
+    MOTOR_SetMotion(&hmotorBankC, timestamp, position, velocity, MOTOR_CHANNEL_8B);
+    // MOTOR_SetMotion(&hmotorBankD, timestamp, position, velocity, MOTOR_CHANNEL_8B);
     /* Disable LED2 Blue */
     HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_RESET);
     /* Wait for the next frame */

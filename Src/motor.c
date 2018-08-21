@@ -505,7 +505,7 @@ OBJ_StatusTypeDef MOTOR_Disable(MOTOR_HandleTypeDef *hmotor, uint32_t channels)
   return status;
 }
 
-OBJ_StatusTypeDef MOTOR_SetMotion(MOTOR_HandleTypeDef *hmotor, motion_t motion, uint32_t channels)
+OBJ_StatusTypeDef MOTOR_SetMotion(MOTOR_HandleTypeDef *hmotor, uint64_t timestamp, int32_t position, int32_t velocity, uint32_t channels)
 {
   __OBJ_LOCK(hmotor);
 
@@ -522,7 +522,9 @@ OBJ_StatusTypeDef MOTOR_SetMotion(MOTOR_HandleTypeDef *hmotor, motion_t motion, 
     {
       if (CHECK_BIT(channels, i))
       {
-        hmotor->MotionExpected[i] = motion;
+        hmotor->MotionExpected[i].position  = position;
+        hmotor->MotionExpected[i].velocity  = velocity;
+        hmotor->MotionExpected[i].timestamp = timestamp;
       }
     }
   }

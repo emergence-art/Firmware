@@ -95,7 +95,7 @@ OBJ_StatusTypeDef MOTOR_Config(MOTOR_HandleTypeDef *hmotor, MOTOR_Channel_Config
 OBJ_StatusTypeDef MOTOR_Enable(MOTOR_HandleTypeDef *hmotor, uint32_t channels);
 OBJ_StatusTypeDef MOTOR_Disable(MOTOR_HandleTypeDef *hmotor, uint32_t channels);
 
-OBJ_StatusTypeDef MOTOR_SetMotion(MOTOR_HandleTypeDef *hmotor, motion_t motion, uint32_t channels);
+OBJ_StatusTypeDef MOTOR_SetMotion(MOTOR_HandleTypeDef *hmotor, uint64_t timestamp, int32_t position, int32_t velocity, uint32_t channels);
 
 /* Private macros ------------------------------------------------------------*/
 
