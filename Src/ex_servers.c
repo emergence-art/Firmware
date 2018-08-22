@@ -23,6 +23,7 @@
 #include <string.h>
 #include "lwip/pbuf.h"
 #include "lwip/udp.h"
+#include "lwip/stats.h"
 #include "tinyosc.h"
 #include "ex_leds.h"
 #include "ex_motors.h"
@@ -112,6 +113,10 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
 
 static void module_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const ip_addr_t *addr, u16_t port)
 {
+  static uint32_t counter = 0;
+  static uint32_t timestamp = 0;
+  uint32_t tick = HAL_GetTick();
+
   /* Static buffer to store p buffer */
   static char buffer[OSC_MAX_PACKET_SIZE];
   uint16_t length = 0;
@@ -185,6 +190,19 @@ static void module_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
 
   /* Refresh LED's once all pixels are set */
   EX_LEDS_RefreshPixels();
+
+  /* Print internal frames counter */
+  printf("Frame #%lu (%lums)\n", counter, tick-timestamp);
+  counter++;
+  timestamp = tick;
+
+  /* Display LwIP stats each 1000 frames */
+#ifdef LWIP_STATS_DISPLAY
+  if (counter%1000 == 0)
+  {
+    stats_display();
+  }
+#endif
 }
 
 /* Exported functions --------------------------------------------------------*/

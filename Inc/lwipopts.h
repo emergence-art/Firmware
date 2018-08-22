@@ -93,14 +93,20 @@
 #define MEM_ALIGNMENT 4
 /*----- Default Value for MEM_SIZE: 1600 ---*/
 #define MEM_SIZE 8192
+/*----- Default Value for MEMP_NUM_REASSDATA: 5 ---*/
+#define MEMP_NUM_REASSDATA 16
 /*----- Value in opt.h for MEMP_NUM_SYS_TIMEOUT: (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2*LWIP_DHCP) + LWIP_AUTOIP + LWIP_IGMP + LWIP_DNS + (PPP_SUPPORT*6*MEMP_NUM_PPP_PCB) + (LWIP_IPV6 ? (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD) : 0)) -*/
 #ifdef LWIP_USE_DHCP
 #define MEMP_NUM_SYS_TIMEOUT 5
 #endif /* LWIP_USE_DHCP */
+/*----- Default Value for PBUF_POOL_SIZE: 16 ---*/
+#define PBUF_POOL_SIZE 32
 /*----- Default Value for PBUF_POOL_BUFSIZE: 592 ---*/
-#define PBUF_POOL_BUFSIZE 4152
+#define PBUF_POOL_BUFSIZE 1480
 /*----- Value in opt.h for LWIP_ETHERNET: LWIP_ARP || PPPOE_SUPPORT -*/
 #define LWIP_ETHERNET 1
+/*----- Default Value for IP_REASS_MAX_PBUFS: 10 ---*/
+#define IP_REASS_MAX_PBUFS 16
 /*----- Value in opt.h for LWIP_DNS_SECURE: (LWIP_DNS_SECURE_RAND_XID | LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | LWIP_DNS_SECURE_RAND_SRC_PORT) -*/
 #define LWIP_DNS_SECURE 7
 /*----- Default Value for TCP_MSS: 536 ---*/
@@ -115,8 +121,18 @@
 #define LWIP_SOCKET 0
 /*----- Value in opt.h for RECV_BUFSIZE_DEFAULT: INT_MAX -----*/
 #define RECV_BUFSIZE_DEFAULT 2000000000
-/*----- Value in opt.h for LWIP_STATS: 1 -----*/
-#define LWIP_STATS 0
+/*----- Default Value for LWIP_STATS: 0 ---*/
+#define LWIP_STATS 1
+/*----- Default Value for LWIP_STATS_DISPLAY: 0 ---*/
+#define LWIP_STATS_DISPLAY 1
+/*----- Value in opt.h for ETHARP_STATS: 0 or LWIP_ARP -----*/
+#define ETHARP_STATS 0
+/*----- Value in opt.h for ICMP_STATS: 0 or LWIP_ICMP -----*/
+#define ICMP_STATS 0
+/*----- Value in opt.h for TCP_STATS: 0 or LWIP_TCP -----*/
+#define TCP_STATS 0
+/*----- Value in opt.h for MIB2_STATS: 0 or SNMP_LWIP_MIB2 -----*/
+#define MIB2_STATS 0
 /*----- Value in opt.h for CHECKSUM_GEN_IP: 1 -----*/
 #define CHECKSUM_GEN_IP 0
 /*----- Value in opt.h for CHECKSUM_GEN_UDP: 1 -----*/
