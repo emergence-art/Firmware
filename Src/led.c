@@ -526,23 +526,21 @@ OBJ_StatusTypeDef LED_SetPixels(LED_HandleTypeDef *hled, uint32_t argb, uint32_t
   OBJ_StatusTypeDef status = OBJ_OK;
 
   /* Check DMA state first */
-  if (hled->Init.hdma->State == HAL_DMA_STATE_READY)
+  // FIXME https://github.com/emergence-art/Firmware/issues/3
+  while (hled->Init.hdma->State != HAL_DMA_STATE_READY)
   {
-    /* Call SetPixel callback */
-    if (IS_LED_ACTIVE_CHANNELS(hled, channels))
-    {
-      color_t color = { .ARGB = argb };
-      hled->SetPixelsCallback(hled, color, position, channels);
-    }
-    else
-    {
-      printf("LED: Cannot set pixel on unactive channel(s)\n");
-      status = OBJ_ERROR;
-    }
+    __NOP();
+  }
+
+  /* Call SetPixel callback */
+  if (IS_LED_ACTIVE_CHANNELS(hled, channels))
+  {
+    color_t color = { .ARGB = argb };
+    hled->SetPixelsCallback(hled, color, position, channels);
   }
   else
   {
-    printf("LED: DMA not ready\n");
+    printf("LED: Cannot set pixel on unactive channel(s)\n");
     status = OBJ_ERROR;
   }
 
