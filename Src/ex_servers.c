@@ -35,6 +35,7 @@
 /*  Emergence OSC bundle content
  *  [ LED(25, argb) + MOTOR(1, position) + MOTOR(1, velocity) ]
  */
+#define OSC_MAX_PACKET_SIZE    4096
 #define OSC_NB_OF_MESSAGES       27
 #define OSC_LEDS_MESSAGE_INDEX    0
 #define OSC_MOTOR_MESSAGE_INDEX  25
@@ -111,11 +112,22 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
 
 static void module_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const ip_addr_t *addr, u16_t port)
 {
-  /* Allocate the local buffer based on p buffer tot_len */
-  const uint16_t length = p->tot_len;
-  char *buffer = malloc(length);
+  /* Static buffer to store p buffer */
+  static char buffer[OSC_MAX_PACKET_SIZE];
+  uint16_t length = 0;
 
-  /* Fill the local buffer with pbuf chain */
+  /* Check p buffer tot_len */
+  if (p->tot_len > OSC_MAX_PACKET_SIZE)
+  {
+    printf("EX: Buffer overflow in module callback\n");
+    HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+  }
+  else
+  {
+    length = p->tot_len;
+  }
+
+  /* Fill the local buffer with p buffer */
   char *ptr = buffer;
   memcpy(ptr, p->payload, p->len);
   struct pbuf *q = p;
@@ -125,6 +137,9 @@ static void module_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
     ptr += q->len;
     memcpy(ptr, q->payload, q->len);
   }
+
+  /* Free the p buffer */
+  pbuf_free(p);
 
   /* Parse OSC packet */
   if (tosc_isBundle(buffer))
@@ -170,12 +185,6 @@ static void module_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
 
   /* Refresh LED's once all pixels are set */
   EX_LEDS_RefreshPixels();
-
-  /* Free the local buffer */
-  free(buffer);
-
-  /* Free the p buffer */
-  pbuf_free(p);
 }
 
 /* Exported functions --------------------------------------------------------*/
