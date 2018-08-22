@@ -46,7 +46,9 @@
 
 /* Private macros ------------------------------------------------------------*/
 
-#define CHECK_BIT(var,pos)  ( (var) & (1<<(pos)) )
+#define SET_BIT_AT(var,pos)    ( (var) |=  (1U<<(pos)) )
+#define CLEAR_BIT_AT(var,pos)  ( (var) &= ~(1U<<(pos)) )
+#define CHECK_BIT_AT(var,pos)  ( (var) &   (1U<<(pos)) )
 
 #define MOTION_INIT(__MOTION__)       \
   do {                                \
@@ -180,7 +182,7 @@ static void __MOTOR_CookMotionMulti_BSRR32(MOTOR_HandleTypeDef *hmotor)
   /* Compute acceleration and dv for each active channel */
   for (size_t i=0; i<MOTOR_NB_OF_CHANNELS; i++)
   {
-    if (CHECK_BIT(hmotor->ChannelsFlag, i))
+    if (CHECK_BIT_AT(hmotor->ChannelsFlag, i))
     {
       mc[i].acceleration = ( me[i].velocity - mc[i].velocity ) / dT ;
       dv[i] = mc[i].acceleration * dt ;
@@ -193,7 +195,7 @@ static void __MOTOR_CookMotionMulti_BSRR32(MOTOR_HandleTypeDef *hmotor)
     hmotor->BufferPointer[idx] = 0x00000000;
     for (size_t i=0; i<MOTOR_NB_OF_CHANNELS; i++)
     {
-      if (CHECK_BIT(hmotor->ChannelsFlag, i))
+      if (CHECK_BIT_AT(hmotor->ChannelsFlag, i))
       {
         /* Update motion parameters */
         mc[i].timestamp   += dt ;
@@ -203,26 +205,26 @@ static void __MOTOR_CookMotionMulti_BSRR32(MOTOR_HandleTypeDef *hmotor)
         /* Direction */
         if ( ( mc[i].velocity - dv[i] ) <= 0.0 && mc[i].velocity > 0.0 )
         {
-          hmotor->BufferPointer[idx] |= 1<<(8+i); // Set
+          SET_BIT_AT(hmotor->BufferPointer[idx], i+8);
         }
         if ( ( mc[i].velocity - dv[i] ) >= 0.0 && mc[i].velocity < 0.0 )
         {
-          hmotor->BufferPointer[idx] |= (1<<(8+i))<<16; // Clear
+          SET_BIT_AT(hmotor->BufferPointer[idx], i+8+16);
         }
         /* Step */
         if ( mc[i]._fractional >= ( 1.0 / (double)(MOTOR_NB_STEPS_PER_REVOLUTION) ) )
         {
-          hmotor->BufferPointer[idx] |= 1<<(i); // Set
+          SET_BIT_AT(hmotor->BufferPointer[idx], i);
           mc[i]._fractional -= 1.0 / (double)(MOTOR_NB_STEPS_PER_REVOLUTION) ;
         }
         else if ( mc[i]._fractional <= ( -1.0 / (double)(MOTOR_NB_STEPS_PER_REVOLUTION) ) )
         {
-          hmotor->BufferPointer[idx] |= 1<<(i); // Set
+          SET_BIT_AT(hmotor->BufferPointer[idx], i);
           mc[i]._fractional += 1.0 / (double)(MOTOR_NB_STEPS_PER_REVOLUTION) ;
         }
         else
         {
-          hmotor->BufferPointer[idx] |= (1<<(i))<<16; // Clear
+          SET_BIT_AT(hmotor->BufferPointer[idx], i+16);
         }
       }
     }
@@ -251,6 +253,7 @@ OBJ_StatusTypeDef MOTOR_Init(MOTOR_HandleTypeDef *hmotor)
   hmotor->BufferData1 = NULL;
   hmotor->BufferPointer = NULL;
   hmotor->ChannelsFlag = 0x0;
+  hmotor->MotionsFlag = 0x0;
   hmotor->CookMotionCallback = NULL;
   switch (hmotor->Init.Channel)
   {
@@ -353,7 +356,7 @@ OBJ_StatusTypeDef MOTOR_Config(MOTOR_HandleTypeDef *hmotor, MOTOR_Channel_Config
   /* Check channels pins (STEP, DIR) parameters */
   for (size_t i=0; i<2*MOTOR_NB_OF_CHANNELS; i++)
   {
-    if (CHECK_BIT(channels, i))
+    if (CHECK_BIT_AT(channels, i))
     {
 #if defined (STM32F765xx)
       /* General purpose output mode - 2 bits - value @ 1 */
@@ -372,9 +375,9 @@ OBJ_StatusTypeDef MOTOR_Config(MOTOR_HandleTypeDef *hmotor, MOTOR_Channel_Config
   /* Copy channels configuration to MOTOR handle */
   for (size_t i=0; i<MOTOR_NB_OF_CHANNELS; i++)
   {
-    if (CHECK_BIT(channels, i))
+    if (CHECK_BIT_AT(channels, i))
     {
-      hmotor->ChannelsFlag |= 0x0101<<i;
+      SET_BIT_AT(hmotor->ChannelsFlag, i);
       memcpy(&hmotor->ChannelsConfig[i], config, sizeof(MOTOR_Channel_ConfigTypeDef));
     }
   }
@@ -382,7 +385,7 @@ OBJ_StatusTypeDef MOTOR_Config(MOTOR_HandleTypeDef *hmotor, MOTOR_Channel_Config
   /* Ensure channels are disabled and lock pins settings */
   for (size_t i=0; i<MOTOR_NB_OF_CHANNELS; i++)
   {
-    if (CHECK_BIT(channels, i))
+    if (CHECK_BIT_AT(channels, i))
     {
       status |= PIO_Disable(hmotor->ChannelsConfig[i].hpioEnable);
       if (HAL_GPIO_LockPin(hmotor->Init.Port, 0x0101<<i) != HAL_OK)
@@ -413,7 +416,7 @@ OBJ_StatusTypeDef MOTOR_Enable(MOTOR_HandleTypeDef *hmotor, uint32_t channels)
   {
     for (size_t i=0; i<MOTOR_NB_OF_CHANNELS; i++)
     {
-      if (CHECK_BIT(channels, i))
+      if (CHECK_BIT_AT(channels, i))
       {
         status |= PIO_Enable(hmotor->ChannelsConfig[i].hpioEnable);
       }
@@ -466,7 +469,7 @@ OBJ_StatusTypeDef MOTOR_Disable(MOTOR_HandleTypeDef *hmotor, uint32_t channels)
   {
     for (size_t i=0; i<MOTOR_NB_OF_CHANNELS; i++)
     {
-      if (CHECK_BIT(channels, i))
+      if (CHECK_BIT_AT(channels, i))
       {
         status |= PIO_Disable(hmotor->ChannelsConfig[i].hpioEnable);
       }
@@ -520,8 +523,9 @@ OBJ_StatusTypeDef MOTOR_SetMotion(MOTOR_HandleTypeDef *hmotor, uint64_t timestam
   {
     for (size_t i=0; i<MOTOR_NB_OF_CHANNELS; i++)
     {
-      if (CHECK_BIT(channels, i))
+      if (CHECK_BIT_AT(channels, i))
       {
+        SET_BIT_AT(hmotor->MotionsFlag, i);
         hmotor->MotionExpected[i].position  = position;
         hmotor->MotionExpected[i].velocity  = velocity;
         hmotor->MotionExpected[i].timestamp = timestamp;

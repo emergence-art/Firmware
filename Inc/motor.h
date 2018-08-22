@@ -31,15 +31,15 @@
 #define MOTOR_NB_OF_CHANNELS  (8) // 2 bits per MOTOR, 16 bits per GPIO Port
 
 /* MOTOR channels definition */
-#define MOTOR_CHANNEL_0   ((uint16_t)0x0101U)
-#define MOTOR_CHANNEL_1   ((uint16_t)0x0202U)
-#define MOTOR_CHANNEL_2   ((uint16_t)0x0404U)
-#define MOTOR_CHANNEL_3   ((uint16_t)0x0808U)
-#define MOTOR_CHANNEL_4   ((uint16_t)0x1010U)
-#define MOTOR_CHANNEL_5   ((uint16_t)0x2020U)
-#define MOTOR_CHANNEL_6   ((uint16_t)0x4040U)
-#define MOTOR_CHANNEL_7   ((uint16_t)0x8080U)
-#define MOTOR_CHANNEL_8B  ((uint16_t)0xFFFFU)
+#define MOTOR_CHANNEL_0   ((uint16_t)0x0001U)
+#define MOTOR_CHANNEL_1   ((uint16_t)0x0002U)
+#define MOTOR_CHANNEL_2   ((uint16_t)0x0004U)
+#define MOTOR_CHANNEL_3   ((uint16_t)0x0008U)
+#define MOTOR_CHANNEL_4   ((uint16_t)0x0010U)
+#define MOTOR_CHANNEL_5   ((uint16_t)0x0020U)
+#define MOTOR_CHANNEL_6   ((uint16_t)0x0040U)
+#define MOTOR_CHANNEL_7   ((uint16_t)0x0080U)
+#define MOTOR_CHANNEL_8B  ((uint16_t)0x00FFU)
 
 /* Exported types ------------------------------------------------------------*/
 
@@ -77,6 +77,7 @@ typedef struct __MOTOR_HandleTypeDef {
   MOTOR_Channel_ConfigTypeDef  ChannelsConfig[MOTOR_NB_OF_CHANNELS];
   uint32_t                     TIMx_DIER_CCxDE;
   uint32_t                     DMA_SxPAR;
+  uint16_t                     MotionsFlag;
   motion_t                     MotionCurrent[MOTOR_NB_OF_CHANNELS];
   motion_t                     MotionExpected[MOTOR_NB_OF_CHANNELS];
   __IO OBJ_LockTypeDef         Lock;
