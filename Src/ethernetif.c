@@ -62,6 +62,9 @@
 /* Within 'USER CODE' section, code will be kept by default at each generation */
 /* USER CODE BEGIN 0 */
 
+/* From main.c */
+extern I2C_HandleTypeDef hi2c1;
+
 /* USER CODE END 0 */
 
 /* Private define ------------------------------------------------------------*/
@@ -237,7 +240,19 @@ static void low_level_init(struct netif *netif)
   heth.Init.MediaInterface = ETH_MEDIA_INTERFACE_RMII;
 
   /* USER CODE BEGIN MACADDRESS */
-    
+  /* Settings for EEPROM Microchip 24AA02E64 SOT-23 */
+  static const uint8_t eeprom_address = 0xA0;
+  static const uint8_t eeprom_eui48_addr = 0xFA;
+  static const uint8_t eeprom_eui48_size = 6;
+  uint8_t hmac[8];
+  hal_eth_init_status = HAL_I2C_Mem_Read(&hi2c1,
+      eeprom_address, eeprom_eui48_addr, I2C_MEMADD_SIZE_8BIT, hmac, eeprom_eui48_size, 100);
+  if (hal_eth_init_status != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+  uint64_t nmac = __builtin_bswap64(*((uint64_t*)(hmac)));
+  memcpy(MACAddr, (uint8_t*)(&nmac)+2, eeprom_eui48_size);
   /* USER CODE END MACADDRESS */
 
   hal_eth_init_status = HAL_ETH_Init(&heth);
