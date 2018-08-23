@@ -278,8 +278,8 @@ void EX_LEDS_RunTestMode(_Bool loop, uint32_t delay)
   HAL_GPIO_WritePin(BRD_LED1_G_GPIO_Port, BRD_LED1_G_Pin, GPIO_PIN_SET);
 
   /* Main workloop */
-  size_t offset = 0;
-  while (loop)
+  static size_t offset = 0;
+  do
   {
     /* Enable LED2 Blue for frame status check */
     HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_SET);
@@ -302,4 +302,5 @@ void EX_LEDS_RunTestMode(_Bool loop, uint32_t delay)
       HAL_Delay(delay);
     }
   }
+  while (loop);
 }
