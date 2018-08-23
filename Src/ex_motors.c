@@ -306,8 +306,8 @@ void EX_MOTORS_RunTestMode(_Bool loop, uint32_t delay)
   /* Enable LED1 Green for status check */
   HAL_GPIO_WritePin(BRD_LED1_G_GPIO_Port, BRD_LED1_G_Pin, GPIO_PIN_SET);
 
-  uint64_t timestamp = (uint64_t)(10.0*M_PI);
-  while (loop)
+  static uint64_t timestamp = (uint64_t)(10.0*M_PI);
+  do
   {
     /* Enable LED2 Blue for frame status check */
     HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_SET);
@@ -327,4 +327,5 @@ void EX_MOTORS_RunTestMode(_Bool loop, uint32_t delay)
       HAL_Delay(delay);
     }
   }
+  while (loop);
 }
