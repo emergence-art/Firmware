@@ -85,6 +85,11 @@ UART_HandleTypeDef huart5;
 DMA_HandleTypeDef hdma_uart5_rx;
 DMA_HandleTypeDef hdma_uart5_tx;
 
+/* From ethernetif.c */
+extern uint8_t gMACAddr[6];
+/* From lwip.c */
+extern struct netif gnetif;
+
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 static const char Banner[] = "\n\
@@ -125,6 +130,10 @@ static void EX_Init(void)
 {
   printf("%s", Banner);
   printf("Build: %s (%s) - %s, %s\n", VERSION, SHA1, __DATE__, __TIME__);
+  ip4_addr_t *ip_addr = &gnetif.ip_addr;
+  printf("IP: %u.%u.%u.%u (%02x:%02x:%02x:%02x:%02x:%02x)\n",
+      ip4_addr1(ip_addr), ip4_addr2(ip_addr), ip4_addr3(ip_addr), ip4_addr4(ip_addr),
+      gMACAddr[0], gMACAddr[1], gMACAddr[2], gMACAddr[3], gMACAddr[4], gMACAddr[5]);
 }
 
 static void EX_PostInit(void)

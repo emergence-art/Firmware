@@ -110,7 +110,7 @@ __ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethe
 ETH_HandleTypeDef heth;
 
 /* USER CODE BEGIN 3 */
-
+uint8_t gMACAddr[6];
 /* USER CODE END 3 */
 
 /* Private functions ---------------------------------------------------------*/
@@ -296,7 +296,7 @@ static void low_level_init(struct netif *netif)
   HAL_ETH_Start(&heth);
 
 /* USER CODE BEGIN PHY_PRE_CONFIG */ 
-    
+  memcpy(gMACAddr, MACAddr, 6);
 /* USER CODE END PHY_PRE_CONFIG */
   
 
