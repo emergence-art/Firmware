@@ -179,13 +179,37 @@ static void __MOTOR_CookMotionMulti_BSRR32(MOTOR_HandleTypeDef *hmotor)
 
   double dv[MOTOR_NB_OF_CHANNELS];
 
-  /* Compute acceleration and dv for each active channel */
+  /* Cook velocity and acceleration for each active channel in dT interval */
   for (size_t i=0; i<MOTOR_NB_OF_CHANNELS; i++)
   {
-    if (CHECK_BIT_AT(hmotor->ChannelsFlag, i))
+    if (CHECK_BIT_AT(hmotor->ChannelsFlag, i) && CHECK_BIT_AT(hmotor->MotionsFlag, i))
     {
       mc[i].acceleration = ( me[i].velocity - mc[i].velocity ) / dT ;
       dv[i] = mc[i].acceleration * dt ;
+      // /* Cook velocity */
+      // if (me[i].velocity == 0.0)
+      // {
+      //   me[i].velocity = ( me[i].position - mc[i].position ) / dT ;
+      // }
+      // if (me[i].velocity > MOTOR_MAX_VELOCITY_RPS)
+      // {
+      //   me[i].velocity = MOTOR_MAX_VELOCITY_RPS;
+      // }
+      // else if (me[i].velocity < -MOTOR_MAX_VELOCITY_RPS)
+      // {
+      //   me[i].velocity = -MOTOR_MAX_VELOCITY_RPS;
+      // }
+      // /* Cook acceleration */
+      // me[i].acceleration = ( me[i].velocity - mc[i].velocity ) / dT ;
+      // if (me[i].acceleration > MOTOR_MAX_ACCELERATION_RPS2)
+      // {
+      //   me[i].acceleration = MOTOR_MAX_ACCELERATION_RPS2;
+      // }
+      // else if (me[i].acceleration < -MOTOR_MAX_ACCELERATION_RPS2)
+      // {
+      //   me[i].acceleration = -MOTOR_MAX_ACCELERATION_RPS2;
+      // }
+      // dv[i] = me[i].acceleration * dt ;
     }
   }
 
@@ -195,7 +219,7 @@ static void __MOTOR_CookMotionMulti_BSRR32(MOTOR_HandleTypeDef *hmotor)
     hmotor->BufferPointer[idx] = 0x00000000;
     for (size_t i=0; i<MOTOR_NB_OF_CHANNELS; i++)
     {
-      if (CHECK_BIT_AT(hmotor->ChannelsFlag, i))
+      if (CHECK_BIT_AT(hmotor->ChannelsFlag, i) && CHECK_BIT_AT(hmotor->MotionsFlag, i))
       {
         /* Update motion parameters */
         mc[i].timestamp   += dt ;
@@ -226,6 +250,19 @@ static void __MOTOR_CookMotionMulti_BSRR32(MOTOR_HandleTypeDef *hmotor)
         {
           SET_BIT_AT(hmotor->BufferPointer[idx], i+16);
         }
+        // /* Check position and stop motion if at expected position */
+        // if ( mc[i].position > me[i].position && mc[i].velocity > 0.0 )
+        // {
+        //   mc[i].velocity = 0.0;
+        //   // mc[i].acceleration = 0.0;
+        //   SET_BIT_AT(hmotor->MotionsFlag, i);
+        // }
+        // else if ( mc[i].position < me[i].position && mc[i].velocity < 0.0 )
+        // {
+        //   mc[i].velocity = 0.0;
+        //   // mc[i].acceleration = 0.0;
+        //   SET_BIT_AT(hmotor->MotionsFlag, i);
+        // }
       }
     }
   }
