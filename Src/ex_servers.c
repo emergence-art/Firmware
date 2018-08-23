@@ -33,6 +33,8 @@
 #define UDP_PORT_SYSTEM  10000
 #define UDP_PORT_MODULE  10001
 
+#define NB_SYSTEM_CHANNELS  32
+
 /*  Emergence OSC bundle content
  *  [ LED(25, argb) + MOTOR(1, position) + MOTOR(1, velocity) ]
  */
@@ -87,18 +89,113 @@ static err_t udp_server_init(const ip_addr_t *addr, u16_t port, udp_recv_fn call
 
 static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const ip_addr_t *addr, u16_t port)
 {
+  static _Bool status[NB_SYSTEM_CHANNELS] = {0};
+
   if (p->len == p->tot_len)
   {
     if (tosc_isBundle(p->payload))
     {
-      printf("EX: Bundle OSC packet not supported for system control\n");
-      HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+      tosc_bundle bundle;
+      tosc_parseBundle(&bundle, p->payload, p->len);
+      tosc_message osc;
+      while (tosc_getNextMessage(&bundle, &osc))
+      {
+        // tosc_printMessage(&osc);
+        for ( size_t i = 0 ; osc.format[i] != '\0' && i < NB_SYSTEM_CHANNELS ; i++ )
+        {
+          if (osc.format[i] == 'i')
+          {
+            _Bool flag = (_Bool)(tosc_getNextInt32(&osc));
+            switch (i)
+            {
+              case 0: /* LED's enable/disable */
+                if (flag)
+                {
+                  if (flag != status[i])
+                  {
+                    EX_LEDS_Enable();
+                    printf("LED's enabled\n");
+                  }
+                }
+                else
+                {
+                  if (flag != status[i])
+                  {
+                    EX_LEDS_Disable();
+                    printf("LED's disabled\n");
+                  }
+                }
+                break;
+              case 1: /* MOTOR's enable/disable */
+                if (flag)
+                {
+                  if (flag != status[i])
+                  {
+                    EX_MOTORS_Enable();
+                    printf("MOTOR's enabled\n");
+                  }
+                }
+                else
+                {
+                  if (flag != status[i])
+                  {
+                    EX_MOTORS_Disable();
+                    printf("MOTOR's disabled\n");
+                  }
+                }
+                break;
+              case 2: /* LED's Test Mode */
+                if (flag)
+                {
+                  if (flag != status[i])
+                  {
+                    printf("LED's Test Mode enabled\n");
+                  }
+                  EX_LEDS_RunTestMode(false, 0);
+                }
+                else
+                {
+                  if (flag != status[i])
+                  {
+                    EX_LEDS_BlackoutPixels();
+                    printf("LED's Test Mode disabled\n");
+                  }
+                }
+                break;
+              case 3: /* MOTOR's Test Mode */
+                if (flag)
+                {
+                  if (flag != status[i])
+                  {
+                    printf("MOTOR's Test Mode enabled\n");
+                  }
+                  EX_MOTORS_RunTestMode(false, 0);
+                }
+                else
+                {
+                  if (flag != status[i])
+                  {
+                    printf("MOTOR's Test Mode disabled\n");
+                  }
+                }
+                break;
+              default:
+                printf("EX: Unknown OSC system message at index %u\n", i);
+            }
+            status[i] = flag;
+          }
+          else
+          {
+            printf("EX: Bundle OSC packet contains a non-integer value...\n");
+            HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+          }
+        }
+      }
     }
     else
     {
-      tosc_message osc;
-      tosc_parseMessage(&osc, p->payload, p->len);
-      tosc_printMessage(&osc); // TODO
+      printf("EX: Bundle OSC packet expected for system control\n");
+      HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
     }
   }
   else
