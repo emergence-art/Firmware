@@ -220,6 +220,30 @@ void EX_LEDS_Disable(void)
   }
 }
 
+void EX_LEDS_BlackoutPixels(void)
+{
+  /* Local variables */
+  OBJ_StatusTypeDef status = OBJ_OK;
+
+  /* Set pixels to black */
+  for (uint32_t i=0; i<EX_LEDS_PER_STRIP; i++)
+  {
+    status |= LED_SetPixels(&hledBankAB, 0, i, LED_CHANNEL_16B);
+    status |= LED_SetPixels(&hledBankCD, 0, i, LED_CHANNEL_16B);
+  }
+
+  /* refresh pixels */
+  status |= LED_RefreshPixels(&hledBankAB);
+  status |= LED_RefreshPixels(&hledBankCD);
+
+  /* Check status */
+  if (status != OBJ_OK)
+  {
+    printf("EX: Cannot blackout LED's pixels\n");
+    HAL_GPIO_WritePin(BRD_LED1_R_GPIO_Port, BRD_LED1_R_Pin, GPIO_PIN_SET);
+  }
+}
+
 void EX_LEDS_SetPixel(uint32_t argb, uint32_t position, uint32_t channel)
 {
   /* Local variables */
