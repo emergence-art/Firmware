@@ -40,10 +40,10 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-static PIO_HandleTypeDef hpioEnableBankA;
-static PIO_HandleTypeDef hpioEnableBankB;
-static PIO_HandleTypeDef hpioEnableBankC;
-static PIO_HandleTypeDef hpioEnableBankD;
+static PIO_HandleTypeDef hpioLedEnableBankA;
+static PIO_HandleTypeDef hpioLedEnableBankB;
+static PIO_HandleTypeDef hpioLedEnableBankC;
+static PIO_HandleTypeDef hpioLedEnableBankD;
 
 static LED_HandleTypeDef hledBankAB;
 static LED_HandleTypeDef hledBankCD;
@@ -61,34 +61,34 @@ void EX_LEDS_Init(void)
 
   /* Initialize PIO drivers */
 
-  hpioEnableBankA.Init.Pin      = LED_nOE_A_Pin;
-  hpioEnableBankA.Init.Port     = LED_nOE_A_GPIO_Port;
-  hpioEnableBankA.Init.Polarity = PIO_POLARITY_LOW;
-  if (PIO_Init(&hpioEnableBankA) != OBJ_OK)
+  hpioLedEnableBankA.Init.Pin      = LED_nOE_A_Pin;
+  hpioLedEnableBankA.Init.Port     = LED_nOE_A_GPIO_Port;
+  hpioLedEnableBankA.Init.Polarity = PIO_POLARITY_LOW;
+  if (PIO_Init(&hpioLedEnableBankA) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  hpioEnableBankB.Init.Pin      = LED_nOE_B_Pin;
-  hpioEnableBankB.Init.Port     = LED_nOE_B_GPIO_Port;
-  hpioEnableBankB.Init.Polarity = PIO_POLARITY_LOW;
-  if (PIO_Init(&hpioEnableBankB) != OBJ_OK)
+  hpioLedEnableBankB.Init.Pin      = LED_nOE_B_Pin;
+  hpioLedEnableBankB.Init.Port     = LED_nOE_B_GPIO_Port;
+  hpioLedEnableBankB.Init.Polarity = PIO_POLARITY_LOW;
+  if (PIO_Init(&hpioLedEnableBankB) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  hpioEnableBankC.Init.Pin      = LED_nOE_C_Pin;
-  hpioEnableBankC.Init.Port     = LED_nOE_C_GPIO_Port;
-  hpioEnableBankC.Init.Polarity = PIO_POLARITY_LOW;
-  if (PIO_Init(&hpioEnableBankC) != OBJ_OK)
+  hpioLedEnableBankC.Init.Pin      = LED_nOE_C_Pin;
+  hpioLedEnableBankC.Init.Port     = LED_nOE_C_GPIO_Port;
+  hpioLedEnableBankC.Init.Polarity = PIO_POLARITY_LOW;
+  if (PIO_Init(&hpioLedEnableBankC) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  hpioEnableBankD.Init.Pin      = LED_nOE_D_Pin;
-  hpioEnableBankD.Init.Port     = LED_nOE_D_GPIO_Port;
-  hpioEnableBankD.Init.Polarity = PIO_POLARITY_LOW;
-  if (PIO_Init(&hpioEnableBankD) != OBJ_OK)
+  hpioLedEnableBankD.Init.Pin      = LED_nOE_D_Pin;
+  hpioLedEnableBankD.Init.Port     = LED_nOE_D_GPIO_Port;
+  hpioLedEnableBankD.Init.Polarity = PIO_POLARITY_LOW;
+  if (PIO_Init(&hpioLedEnableBankD) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -118,23 +118,23 @@ void EX_LEDS_Init(void)
   ConfigChannel.Length     = EX_LEDS_PER_STRIP;
   ConfigChannel.Brightness = EX_LEDS_BRIGHTNESS;
 
-  ConfigChannel.hpioEnable = &hpioEnableBankA;
+  ConfigChannel.hpioEnable = &hpioLedEnableBankA;
   if (LED_Config(&hledBankAB, &ConfigChannel, LED_CHANNELS_BANK_A) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-  ConfigChannel.hpioEnable = &hpioEnableBankB;
+  ConfigChannel.hpioEnable = &hpioLedEnableBankB;
   if (LED_Config(&hledBankAB, &ConfigChannel, LED_CHANNELS_BANK_B) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  ConfigChannel.hpioEnable = &hpioEnableBankC;
+  ConfigChannel.hpioEnable = &hpioLedEnableBankC;
   if (LED_Config(&hledBankCD, &ConfigChannel, LED_CHANNELS_BANK_C) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-  ConfigChannel.hpioEnable = &hpioEnableBankD;
+  ConfigChannel.hpioEnable = &hpioLedEnableBankD;
   if (LED_Config(&hledBankCD, &ConfigChannel, LED_CHANNELS_BANK_D) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
