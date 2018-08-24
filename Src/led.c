@@ -491,6 +491,12 @@ OBJ_StatusTypeDef LED_Disable(LED_HandleTypeDef *hled, uint32_t channels)
   /* Local variables */
   OBJ_StatusTypeDef status = OBJ_OK;
 
+  /* Wait until the end of the current DMA transfer */
+  while (hled->Init.hdma->State != HAL_DMA_STATE_READY)
+  {
+    __NOP();
+  }
+
   /* Disable configured channels */
   if (IS_LED_ACTIVE_CHANNELS(hled, channels))
   {
