@@ -37,10 +37,10 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-static PIO_HandleTypeDef hpioEnableBankA;
-static PIO_HandleTypeDef hpioEnableBankB;
-static PIO_HandleTypeDef hpioEnableBankC;
-static PIO_HandleTypeDef hpioEnableBankD;
+static PIO_HandleTypeDef hpioMotorEnableBankA;
+static PIO_HandleTypeDef hpioMotorEnableBankB;
+static PIO_HandleTypeDef hpioMotorEnableBankC;
+static PIO_HandleTypeDef hpioMotorEnableBankD;
 
 static MOTOR_HandleTypeDef hmotorBankA;
 static MOTOR_HandleTypeDef hmotorBankB;
@@ -63,34 +63,34 @@ void EX_MOTORS_Init(void)
 
   /* Initialize PIO drivers */
 
-  hpioEnableBankA.Init.Pin      = DRV_nENBL_A_Pin;
-  hpioEnableBankA.Init.Port     = DRV_nENBL_A_GPIO_Port;
-  hpioEnableBankA.Init.Polarity = PIO_POLARITY_LOW;
-  if (PIO_Init(&hpioEnableBankA) != OBJ_OK)
+  hpioMotorEnableBankA.Init.Pin      = DRV_nENBL_A_Pin;
+  hpioMotorEnableBankA.Init.Port     = DRV_nENBL_A_GPIO_Port;
+  hpioMotorEnableBankA.Init.Polarity = PIO_POLARITY_LOW;
+  if (PIO_Init(&hpioMotorEnableBankA) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  hpioEnableBankB.Init.Pin      = DRV_nENBL_B_Pin;
-  hpioEnableBankB.Init.Port     = DRV_nENBL_B_GPIO_Port;
-  hpioEnableBankB.Init.Polarity = PIO_POLARITY_LOW;
-  if (PIO_Init(&hpioEnableBankB) != OBJ_OK)
+  hpioMotorEnableBankB.Init.Pin      = DRV_nENBL_B_Pin;
+  hpioMotorEnableBankB.Init.Port     = DRV_nENBL_B_GPIO_Port;
+  hpioMotorEnableBankB.Init.Polarity = PIO_POLARITY_LOW;
+  if (PIO_Init(&hpioMotorEnableBankB) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  hpioEnableBankC.Init.Pin      = DRV_nENBL_C_Pin;
-  hpioEnableBankC.Init.Port     = DRV_nENBL_C_GPIO_Port;
-  hpioEnableBankC.Init.Polarity = PIO_POLARITY_LOW;
-  if (PIO_Init(&hpioEnableBankC) != OBJ_OK)
+  hpioMotorEnableBankC.Init.Pin      = DRV_nENBL_C_Pin;
+  hpioMotorEnableBankC.Init.Port     = DRV_nENBL_C_GPIO_Port;
+  hpioMotorEnableBankC.Init.Polarity = PIO_POLARITY_LOW;
+  if (PIO_Init(&hpioMotorEnableBankC) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  hpioEnableBankD.Init.Pin      = DRV_nENBL_D_Pin;
-  hpioEnableBankD.Init.Port     = DRV_nENBL_D_GPIO_Port;
-  hpioEnableBankD.Init.Polarity = PIO_POLARITY_LOW;
-  if (PIO_Init(&hpioEnableBankD) != OBJ_OK)
+  hpioMotorEnableBankD.Init.Pin      = DRV_nENBL_D_Pin;
+  hpioMotorEnableBankD.Init.Port     = DRV_nENBL_D_GPIO_Port;
+  hpioMotorEnableBankD.Init.Polarity = PIO_POLARITY_LOW;
+  if (PIO_Init(&hpioMotorEnableBankD) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -135,25 +135,25 @@ void EX_MOTORS_Init(void)
 
   /* Configure MOTOR drivers channels */
 
-  ConfigChannel.hpioEnable = &hpioEnableBankA;
+  ConfigChannel.hpioEnable = &hpioMotorEnableBankA;
   if (MOTOR_Config(&hmotorBankA, &ConfigChannel, MOTOR_CHANNELS_BANK_A) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  ConfigChannel.hpioEnable = &hpioEnableBankB;
+  ConfigChannel.hpioEnable = &hpioMotorEnableBankB;
   if (MOTOR_Config(&hmotorBankB, &ConfigChannel, MOTOR_CHANNELS_BANK_B) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  ConfigChannel.hpioEnable = &hpioEnableBankC;
+  ConfigChannel.hpioEnable = &hpioMotorEnableBankC;
   if (MOTOR_Config(&hmotorBankC, &ConfigChannel, MOTOR_CHANNELS_BANK_C) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  // ConfigChannel.hpioEnable = &hpioEnableBankD;
+  // ConfigChannel.hpioEnable = &hpioMotorEnableBankD;
   // if (MOTOR_Config(&hmotorBankD, &ConfigChannel, MOTOR_CHANNELS_BANK_D) != OBJ_OK)
   // {
   //   _Error_Handler(__FILE__, __LINE__);
