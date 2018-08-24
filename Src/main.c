@@ -136,17 +136,6 @@ static void EX_Init(void)
       gMACAddr[0], gMACAddr[1], gMACAddr[2], gMACAddr[3], gMACAddr[4], gMACAddr[5]);
 }
 
-static void EX_PostInit(void)
-{
-  /* Setup */
-  EX_LEDS_Setup();
-  EX_MOTORS_Setup();
-
-  /* Enable */
-  EX_LEDS_Enable();
-  EX_MOTORS_Enable();
-}
-
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   /* Check interrupt pin */
@@ -229,7 +218,8 @@ int main(void)
   EX_LEDS_Init();
   EX_MOTORS_Init();
   EX_SERVERS_Init();
-  EX_PostInit();
+  EX_LEDS_Setup();
+  EX_MOTORS_Setup();
   /* USER CODE END 2 */
 
   /* Infinite loop */
