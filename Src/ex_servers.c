@@ -43,6 +43,11 @@
 #define OSC_LEDS_MESSAGE_INDEX    0
 #define OSC_MOTOR_MESSAGE_INDEX  25
 
+int32_t MOTOR_MIN_POSITION     =  0;
+int32_t MOTOR_MAX_POSITION     =  5;
+int32_t MOTOR_MAX_VELOCITY     = 10;
+int32_t MOTOR_MAX_ACCELERATION = 20;
+
 /* Private functions ---------------------------------------------------------*/
 
 static err_t udp_server_init(const ip_addr_t *addr, u16_t port, udp_recv_fn callback)
@@ -178,6 +183,18 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                     printf("MOTOR's Test Mode disabled\n");
                   }
                 }
+                break;
+              case 4: /* MOTOR MIN Position */
+                MOTOR_MIN_POSITION = value;
+                break;
+              case 5: /* MOTOR MAX Position */
+                MOTOR_MAX_POSITION = value;
+                break;
+              case 6: /* MOTOR MAX Velocity */
+                MOTOR_MAX_VELOCITY = value;
+                break;
+              case 7: /* MOTOR MAX Acceleration */
+                MOTOR_MAX_ACCELERATION = value;
                 break;
               default:
                 printf("EX: Unknown OSC system message at index %u\n", i);
