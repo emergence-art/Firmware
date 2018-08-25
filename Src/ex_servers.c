@@ -105,13 +105,13 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
         {
           if (osc.format[i] == 'i')
           {
-            _Bool flag = (_Bool)(tosc_getNextInt32(&osc));
+            int32_t value = tosc_getNextInt32(&osc);
             switch (i)
             {
               case 0: /* LED's enable/disable */
-                if (flag)
+                if (value)
                 {
-                  if (flag != status[i])
+                  if (value != status[i])
                   {
                     EX_LEDS_Enable();
                     printf("LED's enabled\n");
@@ -119,7 +119,7 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                 }
                 else
                 {
-                  if (flag != status[i])
+                  if (value != status[i])
                   {
                     EX_LEDS_Disable();
                     printf("LED's disabled\n");
@@ -127,9 +127,9 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                 }
                 break;
               case 1: /* MOTOR's enable/disable */
-                if (flag)
+                if (value)
                 {
-                  if (flag != status[i])
+                  if (value != status[i])
                   {
                     EX_MOTORS_Enable();
                     printf("MOTOR's enabled\n");
@@ -137,7 +137,7 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                 }
                 else
                 {
-                  if (flag != status[i])
+                  if (value != status[i])
                   {
                     EX_MOTORS_Disable();
                     printf("MOTOR's disabled\n");
@@ -145,9 +145,9 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                 }
                 break;
               case 2: /* LED's Test Mode */
-                if (flag)
+                if (value)
                 {
-                  if (flag != status[i])
+                  if (value != status[i])
                   {
                     printf("LED's Test Mode enabled\n");
                   }
@@ -155,7 +155,7 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                 }
                 else
                 {
-                  if (flag != status[i])
+                  if (value != status[i])
                   {
                     EX_LEDS_BlackoutPixels();
                     printf("LED's Test Mode disabled\n");
@@ -163,9 +163,9 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                 }
                 break;
               case 3: /* MOTOR's Test Mode */
-                if (flag)
+                if (value)
                 {
-                  if (flag != status[i])
+                  if (value != status[i])
                   {
                     printf("MOTOR's Test Mode enabled\n");
                   }
@@ -173,7 +173,7 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                 }
                 else
                 {
-                  if (flag != status[i])
+                  if (value != status[i])
                   {
                     printf("MOTOR's Test Mode disabled\n");
                   }
@@ -182,7 +182,7 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
               default:
                 printf("EX: Unknown OSC system message at index %u\n", i);
             }
-            status[i] = flag;
+            status[i] = value;
           }
           else
           {
