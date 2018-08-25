@@ -228,7 +228,7 @@ static void low_level_init(struct netif *netif)
   heth.Instance = ETH;
   heth.Init.AutoNegotiation = ETH_AUTONEGOTIATION_ENABLE;
   heth.Init.PhyAddress = LAN8742A_PHY_ADDRESS;
-  MACAddr[0] = 0x00;
+  MACAddr[0] = 0xFF;
   MACAddr[1] = 0x00;
   MACAddr[2] = 0x00;
   MACAddr[3] = 0x00;
@@ -241,6 +241,7 @@ static void low_level_init(struct netif *netif)
 
   /* USER CODE BEGIN MACADDRESS */
   /* Settings for EEPROM Microchip 24AA02E64 SOT-23 */
+/*
   static const uint8_t eeprom_address = 0xA0;
   static const uint8_t eeprom_eui48_addr = 0xFA;
   static const uint8_t eeprom_eui48_size = 6;
@@ -253,6 +254,7 @@ static void low_level_init(struct netif *netif)
   }
   uint64_t nmac = __builtin_bswap64(*((uint64_t*)(hmac)));
   memcpy(MACAddr, (uint8_t*)(&nmac)+2, eeprom_eui48_size);
+*/
   /* USER CODE END MACADDRESS */
 
   hal_eth_init_status = HAL_ETH_Init(&heth);
