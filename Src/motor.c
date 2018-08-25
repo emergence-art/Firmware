@@ -68,6 +68,8 @@ static void __MOTOR_DMA_XferM0CpltCallback(DMA_HandleTypeDef *hdma)
   /* Change DMA buffer pointing to unused one */
   hmotor->BufferPointer = hmotor->BufferData0;
 
+  HAL_GPIO_WritePin(GPIOG, GPIO_PIN_1, GPIO_PIN_SET);
+
   hmotor->CookMotionCallback(hmotor);
 }
 
@@ -77,6 +79,8 @@ static void __MOTOR_DMA_XferM1CpltCallback(DMA_HandleTypeDef *hdma)
 
   /* Change DMA buffer pointing to unused one */
   hmotor->BufferPointer = hmotor->BufferData1;
+
+  HAL_GPIO_WritePin(GPIOG, GPIO_PIN_1, GPIO_PIN_RESET);
 
   hmotor->CookMotionCallback(hmotor);
 }
@@ -171,6 +175,8 @@ static void __MOTOR_HAL_DMA_Init(MOTOR_HandleTypeDef *hmotor)
 
 static void __MOTOR_CookMotionMulti_BSRR32(MOTOR_HandleTypeDef *hmotor)
 {
+  HAL_GPIO_WritePin(GPIOG, GPIO_PIN_0, GPIO_PIN_SET);
+
   motion_t *mc = hmotor->MotionCurrent;
   motion_t *me = hmotor->MotionExpected;
 
@@ -266,6 +272,8 @@ static void __MOTOR_CookMotionMulti_BSRR32(MOTOR_HandleTypeDef *hmotor)
       }
     }
   }
+
+  HAL_GPIO_WritePin(GPIOG, GPIO_PIN_0, GPIO_PIN_RESET);
 }
 
 /* Exported functions --------------------------------------------------------*/
