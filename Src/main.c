@@ -591,7 +591,7 @@ static void MX_TIM8_Init(void)
   TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig;
 
   htim8.Instance = TIM8;
-  htim8.Init.Prescaler = 1999;
+  htim8.Init.Prescaler = 9999;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim8.Init.Period = 1;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

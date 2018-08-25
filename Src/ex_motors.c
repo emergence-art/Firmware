@@ -161,7 +161,7 @@ void EX_MOTORS_Init(void)
 
   /* Allocate MOTOR drivers memory */
 
-  #define BUFFER_SIZE  8192  // MOTOR_STEPS_BUFFER_DEPTH
+  #define BUFFER_SIZE  1000  // MOTOR_STEPS_BUFFER_DEPTH
 
   if (MOTOR_Alloc(&hmotorBankA) != OBJ_OK)
   {
