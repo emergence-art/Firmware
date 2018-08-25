@@ -36,13 +36,10 @@
  * Datasheet: http://www.ti.com/lit/ds/symlink/drv8825.pdf
  */
 #define MOTOR_NB_STEPS_PER_REVOLUTION  (200)
-#define MOTOR_MAX_VELOCITY_RPM         (1000)
-#define MOTOR_MAX_ACCELERATION_RPM2    (10000)
+#define MOTOR_MAX_VELOCITY             (100)
+#define MOTOR_MAX_ACCELERATION         (20)
 #define MOTOR_STEP_SAMPLING_TIME_NS    (100000) // See TIM settings
 #define MOTOR_STEPS_BUFFER_DEPTH       (1000)
-
-#define MOTOR_MAX_VELOCITY_RPS         (MOTOR_MAX_VELOCITY_RPM/60.0)
-#define MOTOR_MAX_ACCELERATION_RPS2    (MOTOR_MAX_ACCELERATION_RPM2/(60.0*60.0))
 
 /* Private macros ------------------------------------------------------------*/
 
@@ -192,30 +189,30 @@ static void __MOTOR_CookMotionMulti_BSRR32(MOTOR_HandleTypeDef *hmotor)
     {
       mc[i].acceleration = ( me[i].velocity - mc[i].velocity ) / dT ;
       dv[i] = mc[i].acceleration * dt ;
-      // /* Cook velocity */
-      // if (me[i].velocity == 0.0)
-      // {
-      //   me[i].velocity = ( me[i].position - mc[i].position ) / dT ;
-      // }
-      // if (me[i].velocity > MOTOR_MAX_VELOCITY_RPS)
-      // {
-      //   me[i].velocity = MOTOR_MAX_VELOCITY_RPS;
-      // }
-      // else if (me[i].velocity < -MOTOR_MAX_VELOCITY_RPS)
-      // {
-      //   me[i].velocity = -MOTOR_MAX_VELOCITY_RPS;
-      // }
-      // /* Cook acceleration */
-      // me[i].acceleration = ( me[i].velocity - mc[i].velocity ) / dT ;
-      // if (me[i].acceleration > MOTOR_MAX_ACCELERATION_RPS2)
-      // {
-      //   me[i].acceleration = MOTOR_MAX_ACCELERATION_RPS2;
-      // }
-      // else if (me[i].acceleration < -MOTOR_MAX_ACCELERATION_RPS2)
-      // {
-      //   me[i].acceleration = -MOTOR_MAX_ACCELERATION_RPS2;
-      // }
-      // dv[i] = me[i].acceleration * dt ;
+      /* Cook velocity */
+      if (me[i].velocity == 0.0)
+      {
+        me[i].velocity = ( me[i].position - mc[i].position ) / dT ;
+      }
+      if (me[i].velocity > MOTOR_MAX_VELOCITY)
+      {
+        me[i].velocity = MOTOR_MAX_VELOCITY;
+      }
+      else if (me[i].velocity < -MOTOR_MAX_VELOCITY)
+      {
+        me[i].velocity = -MOTOR_MAX_VELOCITY;
+      }
+      /* Cook acceleration */
+      me[i].acceleration = ( me[i].velocity - mc[i].velocity ) / dT ;
+      if (me[i].acceleration > MOTOR_MAX_ACCELERATION)
+      {
+        me[i].acceleration = MOTOR_MAX_ACCELERATION;
+      }
+      else if (me[i].acceleration < -MOTOR_MAX_ACCELERATION)
+      {
+        me[i].acceleration = -MOTOR_MAX_ACCELERATION;
+      }
+      dv[i] = me[i].acceleration * dt ;
     }
   }
 
@@ -256,19 +253,19 @@ static void __MOTOR_CookMotionMulti_BSRR32(MOTOR_HandleTypeDef *hmotor)
         {
           SET_BIT_AT(hmotor->BufferPointer[idx], i+16);
         }
-        // /* Check position and stop motion if at expected position */
-        // if ( mc[i].position > me[i].position && mc[i].velocity > 0.0 )
-        // {
-        //   mc[i].velocity = 0.0;
-        //   // mc[i].acceleration = 0.0;
-        //   SET_BIT_AT(hmotor->MotionsFlag, i);
-        // }
-        // else if ( mc[i].position < me[i].position && mc[i].velocity < 0.0 )
-        // {
-        //   mc[i].velocity = 0.0;
-        //   // mc[i].acceleration = 0.0;
-        //   SET_BIT_AT(hmotor->MotionsFlag, i);
-        // }
+        /* Check position and stop motion if at expected position */
+        if ( mc[i].position > me[i].position && mc[i].velocity > 0.0 )
+        {
+          mc[i].velocity = 0.0;
+          // mc[i].acceleration = 0.0;
+          SET_BIT_AT(hmotor->MotionsFlag, i);
+        }
+        else if ( mc[i].position < me[i].position && mc[i].velocity < 0.0 )
+        {
+          mc[i].velocity = 0.0;
+          // mc[i].acceleration = 0.0;
+          SET_BIT_AT(hmotor->MotionsFlag, i);
+        }
       }
     }
   }
@@ -571,8 +568,8 @@ OBJ_StatusTypeDef MOTOR_SetMotion(MOTOR_HandleTypeDef *hmotor, uint64_t timestam
       if (CHECK_BIT_AT(channels, i))
       {
         SET_BIT_AT(hmotor->MotionsFlag, i);
-        hmotor->MotionExpected[i].position  = position;
-        hmotor->MotionExpected[i].velocity  = velocity;
+        hmotor->MotionExpected[i].position  = position/1000.0;
+        hmotor->MotionExpected[i].velocity  = velocity/1000.0;
         hmotor->MotionExpected[i].timestamp = timestamp;
       }
     }

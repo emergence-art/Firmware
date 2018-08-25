@@ -323,18 +323,18 @@ void EX_MOTORS_RunTestMode(_Bool loop, uint32_t delay)
   /* Enable LED1 Green for status check */
   HAL_GPIO_WritePin(BRD_LED1_G_GPIO_Port, BRD_LED1_G_Pin, GPIO_PIN_SET);
 
-  static uint64_t timestamp = (uint64_t)(10.0*M_PI);
+  static uint64_t timestamp = (uint64_t)(100.0*M_PI);
   do
   {
     /* Enable LED2 Blue for frame status check */
     HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_SET);
     /* Set all motors with same motion for all channels */
-    int32_t position = 5.0*(1.0+sin(1.0*timestamp/10.0));
-    int32_t velocity = 5.0*(1.0+cos(1.0*timestamp/10.0));
     timestamp += 1;
-    MOTOR_SetMotion(&hmotorBankA, timestamp, position, velocity, MOTOR_CHANNEL_8B);
-    MOTOR_SetMotion(&hmotorBankB, timestamp, position, velocity, MOTOR_CHANNEL_8B);
-    MOTOR_SetMotion(&hmotorBankC, timestamp, position, velocity, MOTOR_CHANNEL_8B);
+    int32_t velocity = 0;
+    int32_t position = 2000.0*sin(1.0*timestamp/100.0);
+    MOTOR_SetMotion(&hmotorBankA, 0, position, velocity, MOTOR_CHANNEL_8B);
+    MOTOR_SetMotion(&hmotorBankB, 0, position, velocity, MOTOR_CHANNEL_8B);
+    MOTOR_SetMotion(&hmotorBankC, 0, position, velocity, MOTOR_CHANNEL_8B);
     // MOTOR_SetMotion(&hmotorBankD, timestamp, position, velocity, MOTOR_CHANNEL_8B);
     /* Disable LED2 Blue */
     HAL_GPIO_WritePin(BRD_LED2_B_GPIO_Port, BRD_LED2_B_Pin, GPIO_PIN_RESET);
