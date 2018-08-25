@@ -331,7 +331,7 @@ void EX_MOTORS_RunTestMode(_Bool loop, uint32_t delay)
     /* Set all motors with same motion for all channels */
     timestamp += 1;
     int32_t velocity = 0;
-    int32_t position = 2000.0*sin(1.0*timestamp/100.0);
+    int32_t position = 1000.0*(1.0+cos(1.0*timestamp/100.0));
     MOTOR_SetMotion(&hmotorBankA, 0, position, velocity, MOTOR_CHANNEL_8B);
     MOTOR_SetMotion(&hmotorBankB, 0, position, velocity, MOTOR_CHANNEL_8B);
     MOTOR_SetMotion(&hmotorBankC, 0, position, velocity, MOTOR_CHANNEL_8B);
