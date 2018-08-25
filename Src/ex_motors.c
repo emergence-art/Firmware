@@ -161,20 +161,37 @@ void EX_MOTORS_Init(void)
 
   /* Allocate MOTOR drivers memory */
 
+  #define BUFFER_SIZE  8192  // MOTOR_STEPS_BUFFER_DEPTH
+
   if (MOTOR_Alloc(&hmotorBankA) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
+  static uint32_t A0[BUFFER_SIZE];
+  static uint32_t A1[BUFFER_SIZE];
+  hmotorBankA.BufferSize = BUFFER_SIZE;
+  hmotorBankA.BufferData0 = A0;
+  hmotorBankA.BufferData1 = A1;
 
   if (MOTOR_Alloc(&hmotorBankB) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
+  static uint32_t B0[BUFFER_SIZE];
+  static uint32_t B1[BUFFER_SIZE];
+  hmotorBankB.BufferSize = BUFFER_SIZE;
+  hmotorBankB.BufferData0 = B0;
+  hmotorBankB.BufferData1 = B1;
 
   if (MOTOR_Alloc(&hmotorBankC) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
+  static uint32_t C0[BUFFER_SIZE];
+  static uint32_t C1[BUFFER_SIZE];
+  hmotorBankC.BufferSize = BUFFER_SIZE;
+  hmotorBankC.BufferData0 = C0;
+  hmotorBankC.BufferData1 = C1;
 
   // if (MOTOR_Alloc(&hmotorBankD) != OBJ_OK)
   // {

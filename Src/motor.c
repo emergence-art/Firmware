@@ -289,30 +289,30 @@ OBJ_StatusTypeDef MOTOR_Alloc(MOTOR_HandleTypeDef *hmotor)
 {
   __OBJ_LOCK_STATE(hmotor, OBJ_STATE_ALLOC);
 
-  /* Allocate and initialize MOTOR buffer #0 */
-  hmotor->BufferSize = MOTOR_STEPS_BUFFER_DEPTH;
-  hmotor->BufferData0 = malloc(hmotor->BufferSize*sizeof(*hmotor->BufferData0));
-  if (hmotor->BufferData0 == NULL)
-  {
-    printf("FATAL: MOTOR: Cannot allocate memory for BufferData #0\n");
-    _Error_Handler(__FILE__, __LINE__);
-  }
-  memset(hmotor->BufferData0, 0, hmotor->BufferSize*sizeof(*hmotor->BufferData0));
-#ifdef MOTOR_DEBUG
-  printf("MOTOR: Allocated memory for BufferData #0: %u byte(s)\n", malloc_usable_size(hmotor->BufferData0));
-#endif
-
-  /* Allocate and initialize MOTOR buffer #1 */
-  hmotor->BufferData1 = malloc(hmotor->BufferSize*sizeof(*hmotor->BufferData1));
-  if (hmotor->BufferData1 == NULL)
-  {
-    printf("FATAL: MOTOR: Cannot allocate memory for BufferData #1\n");
-    _Error_Handler(__FILE__, __LINE__);
-  }
-  memset(hmotor->BufferData1, 0, hmotor->BufferSize*sizeof(*hmotor->BufferData1));
-#ifdef MOTOR_DEBUG
-  printf("MOTOR: Allocated memory for BufferData #1: %u byte(s)\n", malloc_usable_size(hmotor->BufferData1));
-#endif
+//   /* Allocate and initialize MOTOR buffer #0 */
+//   hmotor->BufferSize = MOTOR_STEPS_BUFFER_DEPTH;
+//   hmotor->BufferData0 = malloc(hmotor->BufferSize*sizeof(*hmotor->BufferData0));
+//   if (hmotor->BufferData0 == NULL)
+//   {
+//     printf("FATAL: MOTOR: Cannot allocate memory for BufferData #0\n");
+//     _Error_Handler(__FILE__, __LINE__);
+//   }
+//   memset(hmotor->BufferData0, 0, hmotor->BufferSize*sizeof(*hmotor->BufferData0));
+// #ifdef MOTOR_DEBUG
+//   printf("MOTOR: Allocated memory for BufferData #0: %u byte(s)\n", malloc_usable_size(hmotor->BufferData0));
+// #endif
+//
+//   /* Allocate and initialize MOTOR buffer #1 */
+//   hmotor->BufferData1 = malloc(hmotor->BufferSize*sizeof(*hmotor->BufferData1));
+//   if (hmotor->BufferData1 == NULL)
+//   {
+//     printf("FATAL: MOTOR: Cannot allocate memory for BufferData #1\n");
+//     _Error_Handler(__FILE__, __LINE__);
+//   }
+//   memset(hmotor->BufferData1, 0, hmotor->BufferSize*sizeof(*hmotor->BufferData1));
+// #ifdef MOTOR_DEBUG
+//   printf("MOTOR: Allocated memory for BufferData #1: %u byte(s)\n", malloc_usable_size(hmotor->BufferData1));
+// #endif
 
   /* Initialize callbacks pointers */
   hmotor->CookMotionCallback = __MOTOR_CookMotionMulti_BSRR32;
@@ -333,8 +333,8 @@ OBJ_StatusTypeDef MOTOR_DeInit(MOTOR_HandleTypeDef *hmotor)
   __OBJ_LOCK(hmotor);
 
   /* Free/Clear resources */
-  free(hmotor->BufferData0);
-  free(hmotor->BufferData1);
+  // free(hmotor->BufferData0);
+  // free(hmotor->BufferData1);
   memset(hmotor, 0, sizeof(MOTOR_HandleTypeDef));
 
   __OBJ_UNLOCK_STATE(hmotor, OBJ_STATE_RESET);
