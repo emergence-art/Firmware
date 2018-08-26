@@ -27,5 +27,6 @@ void EX_MOTORS_Enable(void);
 void EX_MOTORS_Disable(void);
 
 void EX_MOTORS_SetMotion(uint64_t timestamp, int32_t position, int32_t velocity, uint32_t channel);
+void EX_MOTORS_SetGlobalMotion(uint64_t timestamp, int32_t position, int32_t velocity);
 
 void EX_MOTORS_RunTestMode(_Bool loop, uint32_t delay);

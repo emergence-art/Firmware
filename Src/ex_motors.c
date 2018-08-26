@@ -318,6 +318,24 @@ void EX_MOTORS_SetMotion(uint64_t timestamp, int32_t position, int32_t velocity,
   }
 }
 
+void EX_MOTORS_SetGlobalMotion(uint64_t timestamp, int32_t position, int32_t velocity)
+{
+  /* Local variables */
+  OBJ_StatusTypeDef status = OBJ_OK;
+
+  /* Set motion */
+  status |= MOTOR_SetMotion(&hmotorBankA, timestamp, position, velocity, MOTOR_CHANNELS_BANK_A);
+  status |= MOTOR_SetMotion(&hmotorBankB, timestamp, position, velocity, MOTOR_CHANNELS_BANK_B);
+  status |= MOTOR_SetMotion(&hmotorBankC, timestamp, position, velocity, MOTOR_CHANNELS_BANK_C);
+  // status |= MOTOR_SetMotion(&hmotorBankD, timestamp, position, velocity, MOTOR_CHANNELS_BANK_D);
+
+  /* Check status */
+  if (status != OBJ_OK)
+  {
+    printf("EX: Cannot set MOTOR's global motion\n");
+  }
+}
+
 void EX_MOTORS_RunTestMode(_Bool loop, uint32_t delay)
 {
   /* Enable LED1 Green for status check */
