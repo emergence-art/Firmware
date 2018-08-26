@@ -215,6 +215,7 @@ static void __MOTOR_CookMotionMulti_BSRR32(MOTOR_HandleTypeDef *hmotor)
         me[i].acceleration = -MOTOR_MAX_ACCELERATION/1000.0;
       }
       dv[i] = me[i].acceleration * dt ;
+      mc[i].acceleration = me[i].acceleration; // Constant
     }
   }
 
