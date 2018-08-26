@@ -47,7 +47,7 @@
 int32_t MOTOR_MIN_POSITION     =  0;
 int32_t MOTOR_MAX_POSITION     =  5;
 int32_t MOTOR_MAX_VELOCITY     = 10;
-int32_t MOTOR_MAX_ACCELERATION = 20;
+int32_t MOTOR_MAX_ACCELERATION =  1;
 
 /* Private functions ---------------------------------------------------------*/
 
