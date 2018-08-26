@@ -39,6 +39,7 @@
  *  [ LED(25, argb) + MOTOR(1, position) + MOTOR(1, velocity) ]
  */
 #define OSC_MAX_PACKET_SIZE    4096
+#define OSC_NB_OF_MODULES        24
 #define OSC_NB_OF_MESSAGES       27
 #define OSC_LEDS_MESSAGE_INDEX    0
 #define OSC_MOTOR_MESSAGE_INDEX  25
@@ -275,7 +276,18 @@ static void module_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
         if (osc.format[i] == 'i')
         {
           uint16_t channel = i/OSC_NB_OF_MESSAGES;
-          if (i%OSC_NB_OF_MESSAGES == OSC_MOTOR_MESSAGE_INDEX)
+          if (i == OSC_NB_OF_MESSAGES*OSC_NB_OF_MODULES)
+          {
+            if (tosc_getNextInt32(&osc) != 0)
+            {
+              EX_MOTORS_Enable();
+            }
+            else
+            {
+              EX_MOTORS_Disable();
+            }
+          }
+          else if (i%OSC_NB_OF_MESSAGES == OSC_MOTOR_MESSAGE_INDEX)
           {
             int32_t position = tosc_getNextInt32(&osc);
             i++; // We assume it's Int32
