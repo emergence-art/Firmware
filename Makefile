@@ -22,7 +22,7 @@ TARGET = Emergence
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -Og
+OPT = -Ofast
 
 SHA1 := $(shell git rev-parse --short `git log -1 --pretty=format:"%H"`)
 ifneq ($(shell git ls-files -m),)
@@ -217,8 +217,6 @@ C_DEFS =  \
 -DSTM32F765xx \
 -DUSE_HAL_TIM_REGISTER_CALLBACKS \
 -DUSE_SERIAL_OVER_USB \
--DLWIP_DEBUG \
--DLWIP_USE_DHCP
 
 # AS includes
 AS_INCLUDES = 
