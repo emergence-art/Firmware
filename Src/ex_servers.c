@@ -129,7 +129,6 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                   if (value != status[i])
                   {
                     EX_LEDS_BlackoutPixels();
-                    HAL_Delay(1);
                     printf("LED's Test Mode disabled\n");
                   }
                 }
@@ -208,7 +207,7 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                   if (value != 0)
                   {
                     i++; // We assume it's Int32
-                    int32_t position = tosc_getNextInt32(&osc);
+                    int32_t position = -tosc_getNextInt32(&osc);
                     i++; // We assume it's Int32
                     int32_t velocity = tosc_getNextInt32(&osc);
                     EX_MOTORS_SetGlobalMotion(0, position, velocity);
