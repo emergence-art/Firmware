@@ -293,7 +293,7 @@ static void module_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
       {
         if (osc.format[i] == 'i')
         {
-          uint16_t channel = i/OSC_NB_OF_MESSAGES;
+          uint16_t channel = i/OSC_NB_OF_MESSAGES + 8*(upcb->local_port-UDP_PORT_MODULE);
           if (i == OSC_NB_OF_MESSAGES*OSC_NB_OF_MODULES)
           {
             if (tosc_getNextInt32(&osc) != 0)
@@ -365,6 +365,8 @@ void EX_SERVERS_Init(void)
 
   /* Initialize module */
   err = udp_server_init(IP_ADDR_ANY, UDP_PORT_MODULE, module_callback);
+  err = udp_server_init(IP_ADDR_ANY, UDP_PORT_MODULE+1, module_callback);
+  err = udp_server_init(IP_ADDR_ANY, UDP_PORT_MODULE+2, module_callback);
   if (err != ERR_OK)
   {
     printf("EX: Module server cannot be initialized - error %i\n", err);
