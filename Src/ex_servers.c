@@ -336,9 +336,12 @@ static void module_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
   EX_LEDS_RefreshPixels();
 
   /* Print internal frames counter */
-  printf("Frame #%lu (%lums)\n", counter, tick-timestamp);
-  counter++;
-  timestamp = tick;
+  if (upcb->local_port == UDP_PORT_MODULE)
+  {
+    printf("Frame #%lu (%lums)\n", counter, tick-timestamp);
+    counter++;
+    timestamp = tick;
+  }
 
   /* Display LwIP stats each 1000 frames */
 #ifdef LWIP_STATS_DISPLAY
