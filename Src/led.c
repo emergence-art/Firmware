@@ -53,7 +53,7 @@
 #define LED_MALLOC_INIT_ODR(__PTR__, __SIZE__, __TYPE__)            \
   do {                                                              \
     int pattern[LED_NB_STEPS_PER_BIT] = LED_STEPS_INIT_PATTERN;     \
-    /* __PTR__ = malloc((__SIZE__)*sizeof(__TYPE__)); */                  \
+    __PTR__ = malloc((__SIZE__)*sizeof(__TYPE__));                  \
     __TYPE__ *pbuffer = (__TYPE__*)(__PTR__);                       \
     for (size_t i=0; i<(__SIZE__); i++) {                           \
       pbuffer[i] = (__TYPE__)(0UL-pattern[i%LED_NB_STEPS_PER_BIT]); \
@@ -334,7 +334,7 @@ OBJ_StatusTypeDef LED_Alloc(LED_HandleTypeDef *hled)
     default:
       do { /* Statement */
         int pattern[LED_NB_STEPS_PER_BIT] = LED_STEPS_INIT_PATTERN;
-        // hled->BufferData = malloc(hled->BufferSize*sizeof(uint32_t));
+        hled->BufferData = malloc(hled->BufferSize*sizeof(uint32_t));
         uint32_t *pbuffer = (uint32_t*)(hled->BufferData);
         for (size_t i=0; i<hled->BufferSize; i++)
         {
@@ -384,7 +384,7 @@ OBJ_StatusTypeDef LED_DeInit(LED_HandleTypeDef *hled)
   __OBJ_LOCK(hled);
 
   /* Free/Clear resources */
-  // free(hled->BufferData);
+  free(hled->BufferData);
   memset(hled, 0, sizeof(LED_HandleTypeDef));
 
   __OBJ_UNLOCK_STATE(hled, OBJ_STATE_RESET);
