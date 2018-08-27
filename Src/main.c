@@ -217,6 +217,8 @@ int main(void)
   EX_Init();
   EX_LEDS_Init();
   EX_MOTORS_Init();
+  uint32_t *ptr = malloc(4096);
+  UNUSED(ptr);
   EX_SERVERS_Init();
   EX_LEDS_Setup();
   EX_MOTORS_Setup();
