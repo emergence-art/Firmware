@@ -188,30 +188,30 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                 break;
               case 4: /* MOTOR MIN Position */
                 MOTOR_MIN_POSITION = value;
-                printf("MOTOR's minimum position set to %ld\n", value);
+                // printf("MOTOR's minimum position set to %ld\n", value);
                 break;
               case 5: /* MOTOR MAX Position */
                 MOTOR_MAX_POSITION = value;
-                printf("MOTOR's maximum position set to %ld\n", value);
+                // printf("MOTOR's maximum position set to %ld\n", value);
                 break;
               case 6: /* MOTOR MAX Velocity */
                 MOTOR_MAX_VELOCITY = value;
-                printf("MOTOR's maximum velocity set to %ld\n", value);
+                // printf("MOTOR's maximum velocity set to %ld\n", value);
                 break;
               case 7: /* MOTOR MAX Acceleration */
                 MOTOR_MAX_ACCELERATION = value;
-                printf("MOTOR's maximum acceleration set to %ld\n", value);
+                // printf("MOTOR's maximum acceleration set to %ld\n", value);
                 break;
               case 8: /* MOTOR set motion */
                 {
                   if (value != 0)
                   {
                     i++; // We assume it's Int32
-                    int32_t position = -tosc_getNextInt32(&osc);
+                    int32_t position = tosc_getNextInt32(&osc);
                     i++; // We assume it's Int32
                     int32_t velocity = tosc_getNextInt32(&osc);
                     EX_MOTORS_SetGlobalMotion(0, position, velocity);
-                    printf("MOTOR's global motion set to p=%ld v=%ld\n", position, velocity);
+                    // printf("MOTOR's global motion set to p=%ld v=%ld\n", position, velocity);
                   }
                 }
                 break;

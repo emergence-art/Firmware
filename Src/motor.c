@@ -235,11 +235,11 @@ static void __MOTOR_CookMotionMulti_BSRR32(MOTOR_HandleTypeDef *hmotor)
         /* Direction */
         if ( ( mc[i].velocity - dv[i] ) <= 0.0 && mc[i].velocity > 0.0 )
         {
-          SET_BIT_AT(hmotor->BufferPointer[idx], i+8);
+          SET_BIT_AT(hmotor->BufferPointer[idx], i+8+16);
         }
         if ( ( mc[i].velocity - dv[i] ) >= 0.0 && mc[i].velocity < 0.0 )
         {
-          SET_BIT_AT(hmotor->BufferPointer[idx], i+8+16);
+          SET_BIT_AT(hmotor->BufferPointer[idx], i+8);
         }
         /* Step */
         if ( mc[i]._fractional >= ( 1.0 / (double)(MOTOR_NB_STEPS_PER_REVOLUTION) ) )

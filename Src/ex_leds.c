@@ -142,15 +142,23 @@ void EX_LEDS_Init(void)
 
   /* Allocate LED drivers memory */
 
+  #define BUFFER_SIZE  1800  // LED_BUFFER_DEPTH
+
   if (LED_Alloc(&hledBankAB) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
+  static uint32_t AB[BUFFER_SIZE];
+  hledBankAB.BufferSize = BUFFER_SIZE;
+  hledBankAB.BufferData = AB;
 
   if (LED_Alloc(&hledBankCD) != OBJ_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
+  static uint32_t CD[BUFFER_SIZE];
+  hledBankCD.BufferSize = BUFFER_SIZE;
+  hledBankCD.BufferData = CD;
 
   /* Success! */
   printf("EX: LED's successfully initialized!\n");
