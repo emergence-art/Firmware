@@ -88,7 +88,7 @@
 /*----- Value in opt.h for SYS_LIGHTWEIGHT_PROT: 1 -----*/
 #define SYS_LIGHTWEIGHT_PROT 0
 /*----- Default Value for MEM_LIBC_MALLOC: 0 ---*/
-#define MEM_LIBC_MALLOC 1
+#define MEM_LIBC_MALLOC 0
 /*----- Value in opt.h for MEM_ALIGNMENT: 1 -----*/
 #define MEM_ALIGNMENT 4
 /*----- Default Value for MEM_SIZE: 1600 ---*/
