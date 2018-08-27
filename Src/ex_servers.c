@@ -204,12 +204,12 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                 break;
               case 8: /* MOTOR set motion */
                 {
+                  i++; // We assume it's Int32
+                  int32_t position = tosc_getNextInt32(&osc);
+                  i++; // We assume it's Int32
+                  int32_t velocity = tosc_getNextInt32(&osc);
                   if (value != 0)
                   {
-                    i++; // We assume it's Int32
-                    int32_t position = tosc_getNextInt32(&osc);
-                    i++; // We assume it's Int32
-                    int32_t velocity = tosc_getNextInt32(&osc);
                     EX_MOTORS_SetGlobalMotion(0, position, velocity);
                     // printf("MOTOR's global motion set to p=%ld v=%ld\n", position, velocity);
                   }
