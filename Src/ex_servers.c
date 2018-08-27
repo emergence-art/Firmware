@@ -114,6 +114,26 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
             int32_t value = tosc_getNextInt32(&osc);
             switch (i)
             {
+              case 2: /* LED's Test Mode */
+              // Run first to disable after the blackout
+                if (value)
+                {
+                  if (value != status[i])
+                  {
+                    printf("LED's Test Mode enabled\n");
+                  }
+                  EX_LEDS_RunTestMode(false, 0);
+                }
+                else
+                {
+                  if (value != status[i])
+                  {
+                    EX_LEDS_BlackoutPixels();
+                    HAL_Delay(1);
+                    printf("LED's Test Mode disabled\n");
+                  }
+                }
+                break;
               case 0: /* LED's enable/disable */
                 if (value)
                 {
@@ -147,24 +167,6 @@ static void system_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, con
                   {
                     EX_MOTORS_Disable();
                     printf("MOTOR's disabled\n");
-                  }
-                }
-                break;
-              case 2: /* LED's Test Mode */
-                if (value)
-                {
-                  if (value != status[i])
-                  {
-                    printf("LED's Test Mode enabled\n");
-                  }
-                  EX_LEDS_RunTestMode(false, 0);
-                }
-                else
-                {
-                  if (value != status[i])
-                  {
-                    EX_LEDS_BlackoutPixels();
-                    printf("LED's Test Mode disabled\n");
                   }
                 }
                 break;
